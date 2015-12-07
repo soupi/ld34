@@ -59,10 +59,21 @@ initialState =
 
 update :: Point -> State -> State
 update direction state =
+  undoCollisions state $
   collisionLayers $
   { objs1: map (moveObj direction) state.objs1
   , objs2: map (moveObj direction) state.objs2
   }
+
+undoCollisions :: State -> State -> State
+undoCollisions old new =
+  { objs1: zipWith undoCols old.objs1 new.objs1
+  , objs2: zipWith undoCols old.objs2 new.objs2
+  }
+
+undoCols :: GameObject -> GameObject -> GameObject
+undoCols old new =
+  if new.collided then old else new
 
 render :: C.Context2D -> State -> Eff ( canvas :: C.Canvas | _) Unit
 render context state = do
@@ -90,7 +101,7 @@ type GameObject =
 
 rect1 :: GameObject
 rect1 =
-  { pos:  { x: width / 2.0 - 15.0, y: height / 2.0 - 15.0 }
+  { pos:  { x: width / 2.0 - 115.0, y: height / 2.0 - 15.0 }
   , size: { x: 40.0, y: 40.0 }
   , speed: 5.0
   , collided: false
