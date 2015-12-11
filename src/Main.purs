@@ -48,11 +48,11 @@ initialState =
 
 update :: Point -> State -> State
 update direction state =
-  undoCollisions state $
+  undoCollisions $
   collisionLayers $
-  { objs1: map (moveObj direction) state.objs1
+  (\state -> { objs1: map (moveObj direction) state.objs1
   , objs2: map (moveObj direction) state.objs2
-  }
+  }) $ collisionLayers state
 
 collisionLayers :: State -> State
 collisionLayers state =
@@ -60,17 +60,11 @@ collisionLayers state =
   , objs2: state.objs2 `testCollisionWith` state.objs1
   }
 
-
-undoCollisions :: State -> State -> State
-undoCollisions old new =
-  { objs1: zipWith undoCols old.objs1 new.objs1
-  , objs2: zipWith undoCols old.objs2 new.objs2
+undoCollisions :: State -> State
+undoCollisions state =
+  { objs1: map undoCollision state.objs1
+  , objs2: map undoCollision state.objs2
   }
-
-undoCols :: GameObject -> GameObject -> GameObject
-undoCols old new =
-  if new.collision then old else new
-
 ------------
 -- Render
 ------------
