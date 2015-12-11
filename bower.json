@@ -15,14 +15,14 @@
     "output"
   ],
   "dependencies": {
-    "purescript-debug": "*",
+    "purescript-aff": "*",
+    "purescript-control": "*",
     "purescript-arrays": "*",
     "purescript-canvas": "*",
     "purescript-eff": "*",
-    "purescript-math": "*",
     "purescript-maybe": "*",
     "purescript-prelude": "*",
-    "purescript-profunctor-lenses": "~0.3.5",
+    "purescript-profunctor-lenses": "*",
     "purescript-signal": "*"
   }
 }

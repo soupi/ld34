@@ -10,6 +10,7 @@ import Data.Foldable
 import Data.Traversable
 import Control.Apply
 import Control.Monad.Eff
+import Control.Monad.Aff
 import Graphics.Canvas as C
 import Signal as S
 import Signal.DOM as S
@@ -24,8 +25,10 @@ main = do
   Just canvas <- C.getCanvasElementById "canvas"
   context <- C.getContext2D canvas
   input <- I.input
-  let game = S.foldp update initialState input
-  S.runSignal (render context <$> game)
+  launchAff $ do
+    initState <- initialState
+    let game = S.foldp update initState input
+    liftEff' $ S.runSignal (render context <$> game)
 
 -----------
 -- Model
@@ -36,11 +39,14 @@ type State
     , objs2 :: Array GameObject
     }
 
-initialState :: State
-initialState =
-  { objs1: [rect1]
-  , objs2: [rect2]
-  }
+initialState :: Aff _ State
+initialState = do
+  obj1 <- rect1
+  obj2 <- rect2
+  pure $
+    { objs1: [obj1]
+    , objs2: [obj2]
+    }
 
 ------------
 -- Update

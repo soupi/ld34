@@ -13,6 +13,7 @@ import Control.Monad.Eff
 import Graphics.Canvas as C
 import Signal as S
 import Signal.DOM as S
+import Control.Monad.Aff
 
 width :: Number
 width = 1024.0
@@ -24,6 +25,9 @@ type Point =
 
 makePoint :: Number -> Number -> Point
 makePoint x y = { x: x, y: y }
+
+loadImageData :: String -> Aff _ C.CanvasImageSource
+loadImageData src = makeAff (\error success -> C.withImage src success)
 
 ------------
 -- Lenses
