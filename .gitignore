@@ -1,5 +1,6 @@
 ### PureScript
 
+.browserify-cache.json
 .psci
 .psci_modules
 output
