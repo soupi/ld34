@@ -21,32 +21,32 @@ import TextBar as T
 
 type Screen
   = { textbar :: T.TextBar
-    , gfx :: String -- color for now
+    , gfx :: Maybe C.CanvasImageSource
     }
 
-mkScreen :: T.TextBar -> Screen
-mkScreen t =
+mkScreen :: C.CanvasImageSource -> T.TextBar -> Screen
+mkScreen img t =
   { textbar: t
-  , gfx: "#888"
+  , gfx: Just img
   }
 
 scrErr :: Screen
 scrErr =
   { textbar: T.mkText "No screens available"
-  , gfx: "#900"
+  , gfx: Nothing
   }
 
-screens :: String -> Zipper Screen
-screens txts =
-  case List.toList $ scrArr txts of
+screens :: C.CanvasImageSource -> String -> Zipper Screen
+screens img txts =
+  case List.toList $ scrArr img txts of
     List.Nil ->
       zipper scrErr List.Nil List.Nil
     List.Cons x xs ->
       zipper x List.Nil xs
 
-scrArr :: String -> Array Screen
-scrArr txts =
-  (map (mkScreen <<< T.mkText) <<< filter (/="") <<< split "\n\n") txts
+scrArr :: C.CanvasImageSource -> String -> Array Screen
+scrArr img txts =
+  (map (mkScreen img <<< T.mkText) <<< filter (/="") <<< split "\n\n") txts
 
 
 intro :: String
@@ -75,8 +75,14 @@ Good Luck!"""
 
 renderScreen :: C.Context2D -> Screen -> Eff ( canvas :: C.Canvas | _) Unit
 renderScreen context screen = do
-  C.setFillStyle screen.gfx context
-  C.fillRect context { x: 0.0, y: 100.0, w: width, h: height - 200.0 }
+  case screen.gfx of
+    Just gfx -> do
+      C.drawImage context gfx 0.0 0.0
+      pure unit
+    Nothing -> do
+      C.setFillStyle "#900" context
+      C.fillRect context { x: 0.0, y: 100.0, w: width, h: height - 200.0 }
+      pure unit
   T.render context screen.textbar
   pure unit
 

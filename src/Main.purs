@@ -2,26 +2,19 @@ module Main where
 
 import Prelude
 
-import Data.Lens
-import Data.Array
-import Data.List as List
 import Data.Maybe
-import Data.Foldable
-import Data.Traversable
-import Control.Apply
 import Control.Monad.Eff
 import Control.Monad.Aff
 import Graphics.Canvas as C
 import Signal as S
 import Signal.Time as S
-import Signal.DOM as S
 
 import Utils
 import CanvasUtils
 import Zipper
-import TextBar as T
 import Input as I
 import Screen
+import SimScreen as Sim
 
 
 main = do
@@ -39,18 +32,32 @@ main = do
 
 data State
   = VNScreen (Zipper Screen)
+  | Simulation Sim.SimScreen
   | Wait S.Time State
+  | Screens State State
+
+finished :: State -> Boolean
+finished (VNScreen zipp) = not $ fst $ next zipp
+finished (Wait _ _) = false
+finished (Simulation sim) = Sim.done sim
+finished (Screens s _) = finished s
 
 initialState :: Aff _ State
 initialState = do
+  comp <- loadImageData "assets/comp.png"
   pure $
-    VNScreen (screens intro)
+    Screens (VNScreen $ screens comp intro)
+            (Simulation $ Sim.mkSimScreen comp)
 
 ------------
 -- Update
 ------------
 
 update :: I.Input -> State -> State
+update input currState@(Screens currScreen nextScreen) =
+  if input.screenDir > 0.0 && finished currScreen
+  then Wait input.time nextScreen
+  else Screens (update input currScreen) nextScreen
 update input currState@(Wait t nextState) =
   if t + S.second / 4.0 <= input.time
   then nextState
@@ -70,14 +77,16 @@ update input state@(VNScreen screens) =
 -- Render
 ------------
 
-getScreens :: State -> Zipper Screen
-getScreens (VNScreen screens) = screens
-getScreens (Wait _ state) = getScreens state
+renderScreens :: C.Context2D -> State -> Eff ( canvas :: C.Canvas | _) Unit
+renderScreens ctx (Simulation screen) = Sim.render ctx screen
+renderScreens ctx (VNScreen screens) = renderScreen ctx (current screens)
+renderScreens ctx (Wait _ state) = renderScreens ctx state
+renderScreens ctx (Screens s _) = renderScreens ctx s
 
 render :: C.Context2D -> State -> Eff ( canvas :: C.Canvas | _) Unit
 render context state = do
   clearCanvas context
-  renderScreen context (current $ getScreens state)
+  renderScreens context state
   pure unit
 
 clearCanvas ctx = do
