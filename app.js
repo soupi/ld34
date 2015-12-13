@@ -413,6 +413,20 @@ var PS = { };
   /* global exports */
   "use strict";
 
+  exports.withImage = function (src) {
+    return function(f) {
+          return function () {
+              var img = new Image();
+              img.src = src;
+              img.addEventListener("load", function() {
+                  f(img)();
+              }, false);
+
+              return {};
+          }
+      };
+  };
+
   exports.getCanvasElementByIdImpl = function(id, Just, Nothing) {
       return function() {
           var el = document.getElementById(id);
@@ -461,6 +475,19 @@ var PS = { };
       };
   };
 
+  exports.drawImage = function(ctx) {
+      return function(image_source) {
+          return function(dx) {
+              return function(dy) {
+                  return function() {
+                      ctx.drawImage(image_source, dx, dy);
+                      return ctx;
+                  };
+              };
+          };
+      };
+  };
+
  
 })(PS["Graphics.Canvas"] = PS["Graphics.Canvas"] || {});
 (function(exports) {
@@ -476,6 +503,8 @@ var PS = { };
       return $foreign.getCanvasElementByIdImpl(elId, Data_Maybe.Just.create, Data_Maybe.Nothing.value);
   };
   exports["getCanvasElementById"] = getCanvasElementById;
+  exports["drawImage"] = $foreign.drawImage;
+  exports["withImage"] = $foreign.withImage;
   exports["fillText"] = $foreign.fillText;
   exports["fillRect"] = $foreign.fillRect;
   exports["setFillStyle"] = $foreign.setFillStyle;
@@ -488,6 +517,24 @@ var PS = { };
 
   exports._unsafeInterleaveAff = function (aff) {
     return aff;
+  }
+
+  exports._makeAff = function (cb) {
+    return function(success, error) {
+      return cb(function(e) {
+        return function() {
+          error(e);
+        };
+      })(function(v) {
+        return function() {
+          try {
+            success(v);
+          } catch (e) {
+            error(e);
+          }
+        };
+      })();
+    }
   }
 
   exports._pure = function (nonCanceler, v) {
@@ -687,6 +734,9 @@ var PS = { };
           };
       };
   };
+  var makeAff$prime = function (h) {
+      return $foreign._makeAff(h);
+  };
   var launchAff = function (_17) {
       return runAff(Control_Monad_Eff_Exception.throwException)(Prelude["const"](Prelude.pure(Control_Monad_Eff.applicativeEff)(Prelude.unit)))($foreign._unsafeInterleaveAff(_17));
   };
@@ -716,6 +766,13 @@ var PS = { };
   var alwaysCanceler = Prelude["const"](Prelude.pure(applicativeAff)(true));
   var liftEff$prime = function (eff) {
       return attempt($foreign._unsafeInterleaveAff($foreign._liftEff(nonCanceler, eff)));
+  };
+  var makeAff = function (h) {
+      return makeAff$prime(function (e) {
+          return function (a) {
+              return Prelude["<$>"](Control_Monad_Eff.functorEff)(Prelude["const"](nonCanceler))(h(e)(a));
+          };
+      });
   };                                                       
   var bindAff = new Prelude.Bind(function () {
       return applyAff;
@@ -726,6 +783,7 @@ var PS = { };
   });
   exports["runAff"] = runAff;
   exports["nonCanceler"] = nonCanceler;
+  exports["makeAff"] = makeAff;
   exports["liftEff'"] = liftEff$prime;
   exports["launchAff"] = launchAff;
   exports["attempt"] = attempt;
@@ -746,7 +804,15 @@ var PS = { };
   var Graphics_Canvas = PS["Graphics.Canvas"];
   var Control_Monad_Aff = PS["Control.Monad.Aff"];
   var width = 1024.0;
+  var loadImageData = function (src) {
+      return Control_Monad_Aff.makeAff(function (error) {
+          return function (success) {
+              return Graphics_Canvas.withImage(src)(success);
+          };
+      });
+  };
   var height = 800.0;
+  exports["loadImageData"] = loadImageData;
   exports["height"] = height;
   exports["width"] = width;;
  
@@ -1135,8 +1201,12 @@ var PS = { };
   var snd = function (_1) {
       return _1.value1;
   };
+  var fst = function (_0) {
+      return _0.value0;
+  };
   exports["Tuple"] = Tuple;
-  exports["snd"] = snd;;
+  exports["snd"] = snd;
+  exports["fst"] = fst;;
  
 })(PS["Utils"] = PS["Utils"] || {});
 (function(exports) {
@@ -1251,7 +1321,7 @@ var PS = { };
           pos: position, 
           size: size, 
           speed: 1.0, 
-          bgcolor: "#1B1C1B", 
+          bgcolor: "#2B2C2B", 
           color: "white", 
           text: str, 
           state: ShowAll.value
@@ -1281,45 +1351,65 @@ var PS = { };
   var Data_Foldable = PS["Data.Foldable"];     
   var scrErr = {
       textbar: TextBar.mkText("No screens available"), 
-      gfx: "#900"
+      gfx: Data_Maybe.Nothing.value
   };
   var renderScreen = function (context) {
       return function (screen) {
           return function __do() {
-              Graphics_Canvas.setFillStyle(screen.gfx)(context)();
-              Graphics_Canvas.fillRect(context)({
-                  x: 0.0, 
-                  y: 100.0, 
-                  w: CanvasUtils.width, 
-                  h: CanvasUtils.height - 200.0
-              })();
+              (function () {
+                  if (screen.gfx instanceof Data_Maybe.Just) {
+                      return function __do() {
+                          Graphics_Canvas.drawImage(context)(screen.gfx.value0)(0.0)(0.0)();
+                          return Prelude.unit;
+                      };
+                  };
+                  if (screen.gfx instanceof Data_Maybe.Nothing) {
+                      return function __do() {
+                          Graphics_Canvas.setFillStyle("#900")(context)();
+                          Graphics_Canvas.fillRect(context)({
+                              x: 0.0, 
+                              y: 100.0, 
+                              w: CanvasUtils.width, 
+                              h: CanvasUtils.height - 200.0
+                          })();
+                          return Prelude.unit;
+                      };
+                  };
+                  throw new Error("Failed pattern match at Screen line 76, column 1 - line 77, column 1: " + [ screen.gfx.constructor.name ]);
+              })()();
               TextBar.render(context)(screen.textbar)();
               return Prelude.unit;
           };
       };
   };
-  var mkScreen = function (t) {
-      return {
-          textbar: t, 
-          gfx: "#888"
+  var mkScreen = function (img) {
+      return function (t) {
+          return {
+              textbar: t, 
+              gfx: new Data_Maybe.Just(img)
+          };
       };
   };
-  var scrArr = function (txts) {
-      return Prelude.map(Prelude.functorArray)(function (_4) {
-          return mkScreen(TextBar.mkText(_4));
-      })(Data_Array.filter(function (_0) {
-          return Prelude["/="](Prelude.eqString)(_0)("");
-      })(Data_String.split("\n\n")(txts)));
+  var scrArr = function (img) {
+      return function (txts) {
+          return Prelude.map(Prelude.functorArray)(function (_6) {
+              return mkScreen(img)(TextBar.mkText(_6));
+          })(Data_Array.filter(function (_0) {
+              return Prelude["/="](Prelude.eqString)(_0)("");
+          })(Data_String.split("\n\n")(txts)));
+      };
   };
-  var screens = function (txts) {
-      var _1 = Data_List.toList(Data_Foldable.foldableArray)(scrArr(txts));
-      if (_1 instanceof Data_List.Nil) {
-          return Zipper.zipper(scrErr)(Data_List.Nil.value)(Data_List.Nil.value);
+  var screens = function (img) {
+      return function (txts) {
+          var _3 = Data_List.toList(Data_Foldable.foldableArray)(scrArr(img)(txts));
+          if (_3 instanceof Data_List.Nil) {
+              return Zipper.zipper(scrErr)(Data_List.Nil.value)(Data_List.Nil.value);
+          };
+          if (_3 instanceof Data_List.Cons) {
+              return Zipper.zipper(_3.value0)(Data_List.Nil.value)(_3.value1);
+          };
+          throw new Error("Failed pattern match at Screen line 39, column 1 - line 40, column 1: " + [ _3.constructor.name ]);
       };
-      if (_1 instanceof Data_List.Cons) {
-          return Zipper.zipper(_1.value0)(Data_List.Nil.value)(_1.value1);
-      };
-      throw new Error("Failed pattern match at Screen line 39, column 1 - line 40, column 1: " + [ _1.constructor.name ]);
   };
   var intro = "Welcome to <Company>.\n\nFor the past 20 our scientists and engineers have been working on a top secret project.\n\nAt last, they have succeeded in creating a marvelous machine, a computing machine.\n\nWe call it 'The Computing Machine'.\n\nYou had the fortune to be selected as one of the chosen few to operate The Computing Machine.\n\nAt <Company>, we have a lot of challenges waiting to be solved.\n\nFortunately for you, The Computing Machine is really simple to operate, it only has two buttons!\n\nAll you have to do is insert the right combination of the two buttons, and The Computing Machine will do the rest!\n\nGood Luck!";
   exports["renderScreen"] = renderScreen;
@@ -1334,25 +1424,56 @@ var PS = { };
   // Generated by psc version 0.7.6.1
   "use strict";
   var Prelude = PS["Prelude"];
-  var Data_Lens = PS["Data.Lens"];
+  var Data_Maybe = PS["Data.Maybe"];
   var Data_Array = PS["Data.Array"];
   var Data_List = PS["Data.List"];
+  var Data_String = PS["Data.String"];
+  var Control_Monad_Eff = PS["Control.Monad.Eff"];
+  var Control_Monad_Aff = PS["Control.Monad.Aff"];
+  var Graphics_Canvas = PS["Graphics.Canvas"];
+  var CanvasUtils = PS["CanvasUtils"];
+  var Zipper = PS["Zipper"];
+  var TextBar = PS["TextBar"];
+  var Input = PS["Input"];
+  var render = function (context) {
+      return function (screen) {
+          return function __do() {
+              Graphics_Canvas.drawImage(context)(screen.gfx)(0.0)(0.0)();
+              return Prelude.unit;
+          };
+      };
+  };
+  var mkSimScreen = function (img) {
+      return {
+          code: Data_List.Nil.value, 
+          gfx: img, 
+          currLine: ""
+      };
+  };                                                                                                                      
+  var done = function (_0) {
+      return false;
+  };
+  exports["render"] = render;
+  exports["done"] = done;
+  exports["mkSimScreen"] = mkSimScreen;;
+ 
+})(PS["SimScreen"] = PS["SimScreen"] || {});
+(function(exports) {
+  // Generated by psc version 0.7.6.1
+  "use strict";
+  var Prelude = PS["Prelude"];
   var Data_Maybe = PS["Data.Maybe"];
-  var Data_Foldable = PS["Data.Foldable"];
-  var Data_Traversable = PS["Data.Traversable"];
-  var Control_Apply = PS["Control.Apply"];
   var Control_Monad_Eff = PS["Control.Monad.Eff"];
   var Control_Monad_Aff = PS["Control.Monad.Aff"];
   var Graphics_Canvas = PS["Graphics.Canvas"];
   var Signal = PS["Signal"];
   var Signal_Time = PS["Signal.Time"];
-  var Signal_DOM = PS["Signal.DOM"];
   var Utils = PS["Utils"];
   var CanvasUtils = PS["CanvasUtils"];
   var Zipper = PS["Zipper"];
-  var TextBar = PS["TextBar"];
   var Input = PS["Input"];
-  var Screen = PS["Screen"];     
+  var Screen = PS["Screen"];
+  var SimScreen = PS["SimScreen"];     
   var VNScreen = (function () {
       function VNScreen(value0) {
           this.value0 = value0;
@@ -1361,6 +1482,15 @@ var PS = { };
           return new VNScreen(value0);
       };
       return VNScreen;
+  })();
+  var Simulation = (function () {
+      function Simulation(value0) {
+          this.value0 = value0;
+      };
+      Simulation.create = function (value0) {
+          return new Simulation(value0);
+      };
+      return Simulation;
   })();
   var Wait = (function () {
       function Wait(value0, value1) {
@@ -1374,51 +1504,112 @@ var PS = { };
       };
       return Wait;
   })();
-  var update = function (input) {
-      return function (_4) {
-          if (_4 instanceof Wait) {
-              var _8 = _4.value0 + Signal_Time.second / 4.0 <= input.time;
-              if (_8) {
-                  return _4.value1;
-              };
-              if (!_8) {
-                  return _4;
-              };
-              throw new Error("Failed pattern match at Main line 53, column 1 - line 54, column 1: " + [ _8.constructor.name ]);
+  var Screens = (function () {
+      function Screens(value0, value1) {
+          this.value0 = value0;
+          this.value1 = value1;
+      };
+      Screens.create = function (value0) {
+          return function (value1) {
+              return new Screens(value0, value1);
           };
-          if (_4 instanceof VNScreen) {
-              var _11 = input.screenDir > 0.0;
-              if (_11) {
-                  return Wait.create(input.time)(VNScreen.create(Utils.snd(Zipper.next(_4.value0))));
+      };
+      return Screens;
+  })();
+  var renderScreens = function (__copy_ctx) {
+      return function (__copy__7) {
+          var ctx = __copy_ctx;
+          var _7 = __copy__7;
+          tco: while (true) {
+              var ctx_1 = ctx;
+              if (_7 instanceof Simulation) {
+                  return SimScreen.render(ctx_1)(_7.value0);
               };
-              if (!_11) {
-                  var _12 = input.screenDir < 0.0;
-                  if (_12) {
-                      return Wait.create(input.time)(VNScreen.create(Utils.snd(Zipper.back(_4.value0))));
-                  };
-                  if (!_12) {
-                      return _4;
-                  };
-                  throw new Error("Failed pattern match: " + [ _12.constructor.name ]);
+              var ctx_1 = ctx;
+              if (_7 instanceof VNScreen) {
+                  return Screen.renderScreen(ctx_1)(Zipper.current(_7.value0));
               };
-              throw new Error("Failed pattern match at Main line 53, column 1 - line 54, column 1: " + [ _11.constructor.name ]);
+              var ctx_1 = ctx;
+              if (_7 instanceof Wait) {
+                  var __tco__7 = _7.value1;
+                  ctx = ctx_1;
+                  _7 = __tco__7;
+                  continue tco;
+              };
+              if (_7 instanceof Screens) {
+                  var __tco_ctx = ctx;
+                  var __tco__7 = _7.value0;
+                  ctx = __tco_ctx;
+                  _7 = __tco__7;
+                  continue tco;
+              };
+              throw new Error("Failed pattern match: " + [ ctx.constructor.name, _7.constructor.name ]);
           };
-          throw new Error("Failed pattern match at Main line 53, column 1 - line 54, column 1: " + [ input.constructor.name, _4.constructor.name ]);
       };
   };
-  var initialState = Prelude.pure(Control_Monad_Aff.applicativeAff)(new VNScreen(Screen.screens(Screen.intro)));
-  var getScreens = function (__copy__5) {
+  var initialState = Prelude.bind(Control_Monad_Aff.bindAff)(CanvasUtils.loadImageData("assets/comp.png"))(function (_4) {
+      return Prelude.pure(Control_Monad_Aff.applicativeAff)(new Screens(VNScreen.create(Screen.screens(_4)(Screen.intro)), Simulation.create(SimScreen.mkSimScreen(_4))));
+  });
+  var finished = function (__copy__5) {
       var _5 = __copy__5;
       tco: while (true) {
           if (_5 instanceof VNScreen) {
-              return _5.value0;
+              return !Utils.fst(Zipper.next(_5.value0));
           };
           if (_5 instanceof Wait) {
-              var __tco__5 = _5.value1;
+              return false;
+          };
+          if (_5 instanceof Simulation) {
+              return SimScreen.done(_5.value0);
+          };
+          if (_5 instanceof Screens) {
+              var __tco__5 = _5.value0;
               _5 = __tco__5;
               continue tco;
           };
           throw new Error("Failed pattern match: " + [ _5.constructor.name ]);
+      };
+  };
+  var update = function (input) {
+      return function (_6) {
+          if (_6 instanceof Screens) {
+              var _26 = input.screenDir > 0.0 && finished(_6.value0);
+              if (_26) {
+                  return new Wait(input.time, _6.value1);
+              };
+              if (!_26) {
+                  return new Screens(update(input)(_6.value0), _6.value1);
+              };
+              throw new Error("Failed pattern match: " + [ _26.constructor.name ]);
+          };
+          if (_6 instanceof Wait) {
+              var _29 = _6.value0 + Signal_Time.second / 4.0 <= input.time;
+              if (_29) {
+                  return _6.value1;
+              };
+              if (!_29) {
+                  return _6;
+              };
+              throw new Error("Failed pattern match: " + [ _29.constructor.name ]);
+          };
+          if (_6 instanceof VNScreen) {
+              var _32 = input.screenDir > 0.0;
+              if (_32) {
+                  return Wait.create(input.time)(VNScreen.create(Utils.snd(Zipper.next(_6.value0))));
+              };
+              if (!_32) {
+                  var _33 = input.screenDir < 0.0;
+                  if (_33) {
+                      return Wait.create(input.time)(VNScreen.create(Utils.snd(Zipper.back(_6.value0))));
+                  };
+                  if (!_33) {
+                      return _6;
+                  };
+                  throw new Error("Failed pattern match: " + [ _33.constructor.name ]);
+              };
+              throw new Error("Failed pattern match: " + [ _32.constructor.name ]);
+          };
+          throw new Error("Failed pattern match: " + [ input.constructor.name, _6.constructor.name ]);
       };
   };
   var clearCanvas = function (ctx) {
@@ -1436,7 +1627,7 @@ var PS = { };
       return function (state) {
           return function __do() {
               clearCanvas(context)();
-              Screen.renderScreen(context)(Zipper.current(getScreens(state)))();
+              renderScreens(context)(state)();
               return Prelude.unit;
           };
       };
@@ -1451,15 +1642,18 @@ var PS = { };
               return Control_Monad_Aff["liftEff'"](Signal.runSignal(Prelude["<$>"](Signal.functorSignal)(render(_2))(game)));
           }))();
       };
-      throw new Error("Failed pattern match at Main line 27, column 1 - line 40, column 1: " + [ _3.constructor.name ]);
+      throw new Error("Failed pattern match at Main line 20, column 1 - line 33, column 1: " + [ _3.constructor.name ]);
   };
   exports["VNScreen"] = VNScreen;
+  exports["Simulation"] = Simulation;
   exports["Wait"] = Wait;
+  exports["Screens"] = Screens;
   exports["clearCanvas"] = clearCanvas;
   exports["render"] = render;
-  exports["getScreens"] = getScreens;
+  exports["renderScreens"] = renderScreens;
   exports["update"] = update;
   exports["initialState"] = initialState;
+  exports["finished"] = finished;
   exports["main"] = main;;
  
 })(PS["Main"] = PS["Main"] || {});
