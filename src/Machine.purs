@@ -58,7 +58,6 @@ data Instruction
   | SKIPIF -- SKIPs if value before top of the stack is zero
   | COMPARE -- compare two values of the top of the stack - zero means equal
   | ADD -- adds top two on stack
-  | XOR -- XORs top two on stack
   | EMPTY -- pushs zero on the stack if it is empty
 
 data Error
@@ -96,10 +95,6 @@ eval machine =
           maybe (throwErr InputError) (\i -> pure $ set input i machine) (tail machine.input)
         POP ->
           maybe (throwErr StackUnderflow) (\s -> pure $ set stack s machine) (tail machine.stack)
-        XOR ->
-          maybe (throwErr StackUnderflow)
-                (\(Tuple x y) -> pure $ over stack (Cons (x + y)) machine)
-                (takeTwo machine.stack)
         ADD ->
           maybe (throwErr StackUnderflow)
                 (\(Tuple x y) -> pure $ over stack (Cons (x + y)) machine)
@@ -135,8 +130,6 @@ movePC machine =
     SKIPIF ->
       maybe (throwErr StackUnderflow) (\x -> pure $ over code (if x == 0 then moveBy x else moveBy 1) machine) (head machine.stack)
     ADD ->
-      pure $ over code (moveBy 1) machine
-    XOR ->
       pure $ over code (moveBy 1) machine
     EMPTY ->
       pure $ over code (moveBy 1) machine
@@ -186,10 +179,8 @@ translate txt =
       pure SKIPIF
     Tuple "001" "10011" ->
       pure COMPARE
-    Tuple "100" "11001" ->
+    Tuple "010" "01000" ->
       pure ADD
-    Tuple "011" "00110" ->
-      pure XOR
     _ ->
       throwErr UnknownInstruction
 

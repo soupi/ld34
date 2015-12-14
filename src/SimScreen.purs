@@ -36,6 +36,7 @@ data State
 type SimScreen
   = { code :: List.List String
     , currLine :: String
+    , currInput :: String
     , gfx :: C.CanvasImageSource
     , compRun :: Boolean
     , inputs  :: List.List Int
@@ -48,6 +49,7 @@ type SimScreen
 mkSimScreen :: C.CanvasImageSource -> SimScreen
 mkSimScreen img =
   { code: List.Nil
+  , currInput: ""
   , currLine: ""
   , gfx: img
   , compRun: false
@@ -106,6 +108,7 @@ update :: I.Input -> SimScreen -> SimScreen
 update i state =
   let input = updateMouseInput i
   in
+   updateState input $
    updateMachine input $
    updateCode input state
 
@@ -125,7 +128,7 @@ updateMachine input state =
   case state.machine of
     Just m ->
       if M.halted m then
-        state { outputs = m.output }
+        state { outputs = m.output, state = ShowOutput, machine = Nothing }
       else
         startMachine input $ state { machine = pure $ tryEval m }
     Nothing ->
@@ -152,9 +155,43 @@ tryEval machine =
 resetMachine :: I.Input -> SimScreen -> SimScreen
 resetMachine input state =
   if input.screenDir < 0.0 then
-    state { machine = Nothing, code = List.Nil, outputs = List.Nil }
+    state { machine = Nothing, code = List.Nil, outputs = List.Nil, currLine = "" }
   else
     state
+
+
+updateState :: I.Input -> SimScreen -> SimScreen
+updateState input state =
+  case state.state of
+    ShowMachine ->
+      if fst input.io then
+        state { state = ShowInput }
+      else if snd input.io then
+        state { state = ShowOutput }
+      else
+        state
+    ShowInput ->
+      if fst input.io then
+        state { state = ShowMachine }
+      else if input.screenDir < 0.0 then
+        state { state = ShowMachine }
+      else if snd input.io then
+        state { state = ShowOutput }
+      else
+        state
+    ShowOutput ->
+      if snd input.io then
+        state { state = ShowMachine }
+      else if input.screenDir < 0.0 then
+        state { state = ShowMachine }
+      else if fst input.io then
+        state { state = ShowInput }
+      else
+        state
+    RunMachine ->
+      state
+    Done ->
+      state
 
 
 ------------
@@ -168,10 +205,20 @@ render ctx screen = do
 
   sequence $ List.zipWith (\p txt -> C.fillText ctx txt p.x p.y) (map (getPosition 350.0 230.0) $ List.range 0 40) (List.reverse screen.code)
 
-  C.setFillStyle "#DD4499" ctx
-  C.fillText ctx ("> " <> screen.currLine) 350.0 (230.0 + 30.0 * 8.0)
+  case screen.state of
+    ShowMachine -> do
+      C.setFillStyle "#DD4499" ctx
+      C.fillText ctx ("> " <> screen.currLine) 350.0 (230.0 + 30.0 * 8.0)
+      pure unit
+    ShowInput ->
+      renderInput ctx screen
+    ShowOutput ->
+      renderOutput ctx screen
+    RunMachine ->
+      pure unit
+    Done ->
+      pure unit
 
-  renderOutput ctx screen
   pure unit
 
 getPosition x y i =
@@ -187,6 +234,19 @@ renderOutput ctx screen = do
   C.setFillStyle "#004499" ctx
   sequence $ List.zipWith (\p txt -> C.fillText ctx txt p.x p.y) (map (getPosition 740.0 150.0) $ List.range 0 8) (List.reverse $ map show screen.outputs)
   pure unit
+
+renderInput :: C.Context2D -> SimScreen -> Eff ( canvas :: C.Canvas | _) Unit
+renderInput ctx screen = do
+  C.setFillStyle "rgba(235,235,255,0.9)" ctx
+  C.fillRect ctx { x: 40.0, y: 100.0, w: 300.0, h: 400.0 }
+  C.setFillStyle "#004499" ctx
+  sequence $ List.zipWith (\p txt -> C.fillText ctx txt p.x p.y) (map (getPosition 80.0 150.0) $ List.range 0 8) (List.reverse $ map show screen.inputs)
+
+  C.setFillStyle "#DD4499" ctx
+  C.fillText ctx ("> " <> screen.currLine) 80.0 (150.0 + 30.0 * 10.0)
+
+  pure unit
+
 
 ---------------------
 

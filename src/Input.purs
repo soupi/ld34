@@ -14,6 +14,7 @@ import Signal.Time as S
 import Signal.DOM as S
 
 import CanvasUtils
+import Utils
 
 input = do
   frames <- S.animationFrame
@@ -24,6 +25,7 @@ input = do
   o <- one'
   mouse <- mouseClick
   winDim <- S.windowDimensions
+  ioSignal <- io
   pure $ S.sampleOn frames
         (buildInput
          <$> time
@@ -32,7 +34,8 @@ input = do
          <*> once z
          <*> once o
          <*> mouse
-         <*> winDim)
+         <*> winDim
+         <*> ioSignal)
 
 type Input
   = { arrows  :: Point
@@ -40,14 +43,16 @@ type Input
     , screenDir :: Number
     , zeroOne :: ZeroOne
     , mouseClick :: Maybe Point
+    , io :: Tuple Boolean Boolean
     }
 
-buildInput :: S.Time -> Point -> Number -> Boolean -> Boolean -> Maybe Point -> S.DimensionPair -> Input
-buildInput t a sdir z o m winDim =
+buildInput :: S.Time -> Point -> Number -> Boolean -> Boolean -> Maybe Point -> S.DimensionPair -> Tuple Boolean Boolean -> Input
+buildInput t a sdir z o m winDim io =
   { arrows: a
   , time: t
   , screenDir: sdir
   , zeroOne: { zero: z, one: o }
+  , io: io
   , mouseClick: map (\p -> { x: p.x - ((toNumber winDim.w - width) / 2.0)
                            , y: p.y - 5.0 }) m
   }
@@ -71,6 +76,14 @@ downKeyCode = 40
 
 enterKeyCode = 13
 escKeyCode = 27
+
+iKeyCode = 73
+oKeyCode = 79
+
+io = do
+  i <- S.keyPressed iKeyCode
+  o <- S.keyPressed oKeyCode
+  pure $ Tuple <$> once i <*> once o
 
 screenDirection = do
   foreward <- S.keyPressed enterKeyCode
