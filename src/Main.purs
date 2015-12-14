@@ -44,7 +44,7 @@ finished (Screens s _) = finished s
 
 initialState :: Aff _ State
 initialState = do
-  comp <- loadImageData "assets/comp.png"
+  comp <- loadImageData "assets/comp2.png"
   pure $
     Screens (VNScreen $ screens comp intro)
             (Simulation $ Sim.mkSimScreen comp)
@@ -62,6 +62,15 @@ update input currState@(Wait t nextState) =
   if t + S.second / 4.0 <= input.time
   then nextState
   else currState
+update input (Simulation sim) = Simulation $ Sim.update input sim
+update input state@(VNScreen screens) =
+  if input.screenDir > 0.0 then
+    (VNScreen <<< snd <<< next) screens
+  else if input.screenDir < 0.0 then
+    (VNScreen <<< snd <<< back) screens
+  else
+    state
+{-
 update input state@(VNScreen screens) =
   if input.screenDir > 0.0
   then
@@ -71,7 +80,7 @@ update input state@(VNScreen screens) =
     (Wait input.time <<< VNScreen <<< snd <<< back) screens
   else
     state
-
+-}
 
 ------------
 -- Render
