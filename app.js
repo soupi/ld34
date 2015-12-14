@@ -77,6 +77,12 @@ var PS = { };
   exports.boolNot = function (b) {
     return !b;
   };
+
+  //- Show -----------------------------------------------------------------------
+
+  exports.showIntImpl = function (n) {
+    return n.toString();
+  };
  
 })(PS["Prelude"] = PS["Prelude"] || {});
 (function(exports) {
@@ -85,6 +91,10 @@ var PS = { };
   var $foreign = PS["Prelude"];
   var Semigroupoid = function (compose) {
       this.compose = compose;
+  };
+  var Category = function (__superclass_Prelude$dotSemigroupoid_0, id) {
+      this["__superclass_Prelude.Semigroupoid_0"] = __superclass_Prelude$dotSemigroupoid_0;
+      this.id = id;
   };
   var Functor = function (map) {
       this.map = map;
@@ -129,12 +139,19 @@ var PS = { };
       this.disj = disj;
       this.not = not;
   };
+  var Show = function (show) {
+      this.show = show;
+  };
   var zero = function (dict) {
       return dict.zero;
   };                                                                           
   var unit = {};
   var top = function (dict) {
       return dict.top;
+  };                                                 
+  var showInt = new Show($foreign.showIntImpl);
+  var show = function (dict) {
+      return dict.show;
   };                                                                            
   var semiringInt = new Semiring($foreign.intAdd, $foreign.intMul, 1, 0);
   var semigroupoidFn = new Semigroupoid(function (f) {
@@ -172,6 +189,9 @@ var PS = { };
   var $less$dollar$greater = function (__dict_Functor_5) {
       return map(__dict_Functor_5);
   };
+  var id = function (dict) {
+      return dict.id;
+  };
   var functorArray = new Functor($foreign.arrayMap);
   var flip = function (f) {
       return function (b) {
@@ -181,6 +201,7 @@ var PS = { };
       };
   }; 
   var eqString = new Eq($foreign.refEq);
+  var eqChar = new Eq($foreign.refEq);
   var eqBoolean = new Eq($foreign.refEq);
   var eq = function (dict) {
       return dict.eq;
@@ -213,7 +234,12 @@ var PS = { };
   };
   var $greater$greater$greater = function (__dict_Semigroupoid_15) {
       return flip(compose(__dict_Semigroupoid_15));
-  }; 
+  };
+  var categoryFn = new Category(function () {
+      return semigroupoidFn;
+  }, function (x) {
+      return x;
+  });
   var boundedBoolean = new Bounded(false, true);
   var bottom = function (dict) {
       return dict.bottom;
@@ -230,6 +256,9 @@ var PS = { };
   };
   var bind = function (dict) {
       return dict.bind;
+  };
+  var $greater$greater$eq = function (__dict_Bind_24) {
+      return bind(__dict_Bind_24);
   }; 
   var apply = function (dict) {
       return dict.apply;
@@ -264,6 +293,7 @@ var PS = { };
   var add = function (dict) {
       return dict.add;
   };
+  exports["Show"] = Show;
   exports["BooleanAlgebra"] = BooleanAlgebra;
   exports["Bounded"] = Bounded;
   exports["Eq"] = Eq;
@@ -274,7 +304,9 @@ var PS = { };
   exports["Applicative"] = Applicative;
   exports["Apply"] = Apply;
   exports["Functor"] = Functor;
+  exports["Category"] = Category;
   exports["Semigroupoid"] = Semigroupoid;
+  exports["show"] = show;
   exports["||"] = $bar$bar;
   exports["&&"] = $amp$amp;
   exports["not"] = not;
@@ -283,6 +315,7 @@ var PS = { };
   exports["bottom"] = bottom;
   exports["top"] = top;
   exports["/="] = $div$eq;
+  exports["=="] = $eq$eq;
   exports["eq"] = eq;
   exports["mod"] = mod;
   exports["div"] = div;
@@ -293,6 +326,7 @@ var PS = { };
   exports["<>"] = $less$greater;
   exports["append"] = append;
   exports["ap"] = ap;
+  exports[">>="] = $greater$greater$eq;
   exports["bind"] = bind;
   exports["liftA1"] = liftA1;
   exports["pure"] = pure;
@@ -300,6 +334,7 @@ var PS = { };
   exports["apply"] = apply;
   exports["<$>"] = $less$dollar$greater;
   exports["map"] = map;
+  exports["id"] = id;
   exports[">>>"] = $greater$greater$greater;
   exports["compose"] = compose;
   exports["otherwise"] = otherwise;
@@ -307,13 +342,16 @@ var PS = { };
   exports["flip"] = flip;
   exports["unit"] = unit;
   exports["semigroupoidFn"] = semigroupoidFn;
+  exports["categoryFn"] = categoryFn;
   exports["functorArray"] = functorArray;
   exports["semiringInt"] = semiringInt;
   exports["moduloSemiringInt"] = moduloSemiringInt;
   exports["eqBoolean"] = eqBoolean;
+  exports["eqChar"] = eqChar;
   exports["eqString"] = eqString;
   exports["boundedBoolean"] = boundedBoolean;
-  exports["booleanAlgebraBoolean"] = booleanAlgebraBoolean;;
+  exports["booleanAlgebraBoolean"] = booleanAlgebraBoolean;
+  exports["showInt"] = showInt;;
  
 })(PS["Prelude"] = PS["Prelude"] || {});
 (function(exports) {
@@ -407,7 +445,21 @@ var PS = { };
           return new Just(value0);
       };
       return Just;
-  })();                                             
+  })();
+  var maybe = function (b) {
+      return function (f) {
+          return function (_0) {
+              if (_0 instanceof Nothing) {
+                  return b;
+              };
+              if (_0 instanceof Just) {
+                  return f(_0.value0);
+              };
+              throw new Error("Failed pattern match at Data.Maybe line 26, column 1 - line 27, column 1: " + [ b.constructor.name, f.constructor.name, _0.constructor.name ]);
+          };
+      };
+  };                                                   
+  var isJust = maybe(false)(Prelude["const"](true));
   var functorMaybe = new Prelude.Functor(function (fn) {
       return function (_2) {
           if (_2 instanceof Just) {
@@ -416,9 +468,47 @@ var PS = { };
           return Nothing.value;
       };
   });
+  var fromMaybe = function (a) {
+      return maybe(a)(Prelude.id(Prelude.categoryFn));
+  };
+  var applyMaybe = new Prelude.Apply(function () {
+      return functorMaybe;
+  }, function (_3) {
+      return function (x) {
+          if (_3 instanceof Just) {
+              return Prelude["<$>"](functorMaybe)(_3.value0)(x);
+          };
+          if (_3 instanceof Nothing) {
+              return Nothing.value;
+          };
+          throw new Error("Failed pattern match at Data.Maybe line 121, column 1 - line 145, column 1: " + [ _3.constructor.name, x.constructor.name ]);
+      };
+  });
+  var bindMaybe = new Prelude.Bind(function () {
+      return applyMaybe;
+  }, function (_5) {
+      return function (k) {
+          if (_5 instanceof Just) {
+              return k(_5.value0);
+          };
+          if (_5 instanceof Nothing) {
+              return Nothing.value;
+          };
+          throw new Error("Failed pattern match at Data.Maybe line 180, column 1 - line 199, column 1: " + [ _5.constructor.name, k.constructor.name ]);
+      };
+  });
+  var applicativeMaybe = new Prelude.Applicative(function () {
+      return applyMaybe;
+  }, Just.create);
   exports["Nothing"] = Nothing;
   exports["Just"] = Just;
-  exports["functorMaybe"] = functorMaybe;;
+  exports["isJust"] = isJust;
+  exports["fromMaybe"] = fromMaybe;
+  exports["maybe"] = maybe;
+  exports["functorMaybe"] = functorMaybe;
+  exports["applyMaybe"] = applyMaybe;
+  exports["applicativeMaybe"] = applicativeMaybe;
+  exports["bindMaybe"] = bindMaybe;;
  
 })(PS["Data.Maybe"] = PS["Data.Maybe"] || {});
 (function(exports) {
@@ -982,8 +1072,66 @@ var PS = { };
       };
       return Right;
   })();
+  var functorEither = new Prelude.Functor(function (f) {
+      return function (_2) {
+          if (_2 instanceof Left) {
+              return new Left(_2.value0);
+          };
+          if (_2 instanceof Right) {
+              return new Right(f(_2.value0));
+          };
+          throw new Error("Failed pattern match at Data.Either line 52, column 1 - line 56, column 1: " + [ f.constructor.name, _2.constructor.name ]);
+      };
+  });
+  var either = function (f) {
+      return function (g) {
+          return function (_1) {
+              if (_1 instanceof Left) {
+                  return f(_1.value0);
+              };
+              if (_1 instanceof Right) {
+                  return g(_1.value0);
+              };
+              throw new Error("Failed pattern match at Data.Either line 28, column 1 - line 29, column 1: " + [ f.constructor.name, g.constructor.name, _1.constructor.name ]);
+          };
+      };
+  };
+  var isLeft = either(Prelude["const"](true))(Prelude["const"](false));
+  var applyEither = new Prelude.Apply(function () {
+      return functorEither;
+  }, function (_4) {
+      return function (r) {
+          if (_4 instanceof Left) {
+              return new Left(_4.value0);
+          };
+          if (_4 instanceof Right) {
+              return Prelude["<$>"](functorEither)(_4.value0)(r);
+          };
+          throw new Error("Failed pattern match at Data.Either line 92, column 1 - line 116, column 1: " + [ _4.constructor.name, r.constructor.name ]);
+      };
+  });
+  var bindEither = new Prelude.Bind(function () {
+      return applyEither;
+  }, either(function (e) {
+      return function (_0) {
+          return new Left(e);
+      };
+  })(function (a) {
+      return function (f) {
+          return f(a);
+      };
+  }));
+  var applicativeEither = new Prelude.Applicative(function () {
+      return applyEither;
+  }, Right.create);
   exports["Left"] = Left;
-  exports["Right"] = Right;;
+  exports["Right"] = Right;
+  exports["isLeft"] = isLeft;
+  exports["either"] = either;
+  exports["functorEither"] = functorEither;
+  exports["applyEither"] = applyEither;
+  exports["applicativeEither"] = applicativeEither;
+  exports["bindEither"] = bindEither;;
  
 })(PS["Data.Either"] = PS["Data.Either"] || {});
 (function(exports) {
@@ -1131,6 +1279,20 @@ var PS = { };
  
 })(PS["CanvasUtils"] = PS["CanvasUtils"] || {});
 (function(exports) {
+  // Generated by psc version 0.7.6.1
+  "use strict";
+  var Prelude = PS["Prelude"];
+  var $eq$less$less = function (__dict_Bind_1) {
+      return function (f) {
+          return function (m) {
+              return Prelude[">>="](__dict_Bind_1)(m)(f);
+          };
+      };
+  };
+  exports["=<<"] = $eq$less$less;;
+ 
+})(PS["Control.Bind"] = PS["Control.Bind"] || {});
+(function(exports) {
   /* global exports */
   "use strict";
 
@@ -1203,8 +1365,29 @@ var PS = { };
       };
       return Cons;
   })();
+  var uncons = function (_17) {
+      if (_17 instanceof Nil) {
+          return Data_Maybe.Nothing.value;
+      };
+      if (_17 instanceof Cons) {
+          return new Data_Maybe.Just({
+              head: _17.value0, 
+              tail: _17.value1
+          });
+      };
+      throw new Error("Failed pattern match at Data.List line 267, column 1 - line 268, column 1: " + [ _17.constructor.name ]);
+  };
   var toList = function (__dict_Foldable_2) {
       return Data_Foldable.foldr(__dict_Foldable_2)(Cons.create)(Nil.value);
+  };
+  var tail = function (_15) {
+      if (_15 instanceof Nil) {
+          return Data_Maybe.Nothing.value;
+      };
+      if (_15 instanceof Cons) {
+          return new Data_Maybe.Just(_15.value1);
+      };
+      throw new Error("Failed pattern match at Data.List line 248, column 1 - line 249, column 1: " + [ _15.constructor.name ]);
   };
   var singleton = function (a) {
       return new Cons(a, Nil.value);
@@ -1314,6 +1497,21 @@ var PS = { };
           };
           throw new Error("Failed pattern match at Data.List line 137, column 1 - line 138, column 1: " + [ start.constructor.name, end.constructor.name ]);
       };
+  };                   
+  var $$null = function (_11) {
+      if (_11 instanceof Nil) {
+          return true;
+      };
+      return false;
+  };                     
+  var head = function (_13) {
+      if (_13 instanceof Nil) {
+          return Data_Maybe.Nothing.value;
+      };
+      if (_13 instanceof Cons) {
+          return new Data_Maybe.Just(_13.value0);
+      };
+      throw new Error("Failed pattern match at Data.List line 233, column 1 - line 234, column 1: " + [ _13.constructor.name ]);
   };
   var functorList = new Prelude.Functor(function (f) {
       return function (lst) {
@@ -1418,6 +1616,10 @@ var PS = { };
   exports["Cons"] = Cons;
   exports["zipWith"] = zipWith;
   exports["reverse"] = reverse;
+  exports["uncons"] = uncons;
+  exports["tail"] = tail;
+  exports["head"] = head;
+  exports["null"] = $$null;
   exports["range"] = range;
   exports["singleton"] = singleton;
   exports["toList"] = toList;
@@ -1429,6 +1631,18 @@ var PS = { };
 (function(exports) {
   /* global exports */
   "use strict";
+
+  // module Data.String
+
+  exports._charAt = function (just) {
+    return function (nothing) {
+      return function (i) {
+        return function (s) {
+          return i >= 0 && i < s.length ? just(s.charAt(i)) : nothing;
+        };
+      };
+    };
+  };
 
   exports.length = function (s) {
     return s.length;
@@ -1454,6 +1668,25 @@ var PS = { };
  
 })(PS["Data.String"] = PS["Data.String"] || {});
 (function(exports) {
+  /* global exports */
+  "use strict";
+
+  exports.charAt = function (i) {
+    return function (s) {
+      if (i >= 0 && i < s.length) return s.charAt(i);
+      throw new Error("Data.String.Unsafe.charAt: Invalid index.");
+    };
+  };
+ 
+})(PS["Data.String.Unsafe"] = PS["Data.String.Unsafe"] || {});
+(function(exports) {
+  // Generated by psc version 0.7.6.1
+  "use strict";
+  var $foreign = PS["Data.String.Unsafe"];
+  exports["charAt"] = $foreign.charAt;;
+ 
+})(PS["Data.String.Unsafe"] = PS["Data.String.Unsafe"] || {});
+(function(exports) {
   // Generated by psc version 0.7.6.1
   "use strict";
   var $foreign = PS["Data.String"];
@@ -1461,7 +1694,19 @@ var PS = { };
   var Data_Char = PS["Data.Char"];
   var Data_Maybe = PS["Data.Maybe"];
   var Data_Monoid = PS["Data.Monoid"];
-  var Data_String_Unsafe = PS["Data.String.Unsafe"];
+  var Data_String_Unsafe = PS["Data.String.Unsafe"];     
+  var uncons = function (_0) {
+      if (_0 === "") {
+          return Data_Maybe.Nothing.value;
+      };
+      return new Data_Maybe.Just({
+          head: Data_String_Unsafe.charAt(0)(_0), 
+          tail: $foreign.drop(1)(_0)
+      });
+  };                                                                                      
+  var charAt = $foreign._charAt(Data_Maybe.Just.create)(Data_Maybe.Nothing.value);
+  exports["uncons"] = uncons;
+  exports["charAt"] = charAt;
   exports["split"] = $foreign.split;
   exports["drop"] = $foreign.drop;
   exports["take"] = $foreign.take;
@@ -2070,6 +2315,548 @@ var PS = { };
 (function(exports) {
   // Generated by psc version 0.7.6.1
   "use strict";
+  var Data_Lens_Lens = PS["Data.Lens.Lens"];
+  var Data_Lens_Setter = PS["Data.Lens.Setter"];
+  var Prelude = PS["Prelude"];
+  var Data_Maybe = PS["Data.Maybe"];
+  var Data_Either = PS["Data.Either"];
+  var Data_List = PS["Data.List"];
+  var Data_String = PS["Data.String"];
+  var Data_Lens = PS["Data.Lens"];
+  var Control_Bind = PS["Control.Bind"];
+  var Utils = PS["Utils"];
+  var Zipper = PS["Zipper"];
+  var Data_Profunctor_Strong = PS["Data.Profunctor.Strong"];     
+  var HALT = (function () {
+      function HALT() {
+
+      };
+      HALT.value = new HALT();
+      return HALT;
+  })();
+  var PRINT = (function () {
+      function PRINT() {
+
+      };
+      PRINT.value = new PRINT();
+      return PRINT;
+  })();
+  var PUSHVAL = (function () {
+      function PUSHVAL(value0) {
+          this.value0 = value0;
+      };
+      PUSHVAL.create = function (value0) {
+          return new PUSHVAL(value0);
+      };
+      return PUSHVAL;
+  })();
+  var PUSHIN = (function () {
+      function PUSHIN() {
+
+      };
+      PUSHIN.value = new PUSHIN();
+      return PUSHIN;
+  })();
+  var POPIN = (function () {
+      function POPIN() {
+
+      };
+      POPIN.value = new POPIN();
+      return POPIN;
+  })();
+  var POP = (function () {
+      function POP() {
+
+      };
+      POP.value = new POP();
+      return POP;
+  })();
+  var SKIP = (function () {
+      function SKIP() {
+
+      };
+      SKIP.value = new SKIP();
+      return SKIP;
+  })();
+  var SKIPIF = (function () {
+      function SKIPIF() {
+
+      };
+      SKIPIF.value = new SKIPIF();
+      return SKIPIF;
+  })();
+  var COMPARE = (function () {
+      function COMPARE() {
+
+      };
+      COMPARE.value = new COMPARE();
+      return COMPARE;
+  })();
+  var ADD = (function () {
+      function ADD() {
+
+      };
+      ADD.value = new ADD();
+      return ADD;
+  })();
+  var XOR = (function () {
+      function XOR() {
+
+      };
+      XOR.value = new XOR();
+      return XOR;
+  })();
+  var EMPTY = (function () {
+      function EMPTY() {
+
+      };
+      EMPTY.value = new EMPTY();
+      return EMPTY;
+  })();
+  var StackUnderflow = (function () {
+      function StackUnderflow() {
+
+      };
+      StackUnderflow.value = new StackUnderflow();
+      return StackUnderflow;
+  })();
+  var UnknownInstruction = (function () {
+      function UnknownInstruction() {
+
+      };
+      UnknownInstruction.value = new UnknownInstruction();
+      return UnknownInstruction;
+  })();
+  var InputError = (function () {
+      function InputError() {
+
+      };
+      InputError.value = new InputError();
+      return InputError;
+  })();
+  var throwErr = Data_Either.Left.create;
+  var takeTwo = function (_25) {
+      if (_25 instanceof Data_List.Cons && _25.value1 instanceof Data_List.Cons) {
+          return Data_Maybe.Just.create(new Utils.Tuple(_25.value0, _25.value1.value0));
+      };
+      return Data_Maybe.Nothing.value;
+  };
+  var strBinToInt = function (str) {
+      return Data_Maybe.fromMaybe(new Data_Either.Left(UnknownInstruction.value))(Prelude.map(Data_Maybe.functorMaybe)(Data_Either.Right.create)(Prelude.bind(Data_Maybe.bindMaybe)(Data_String.uncons(str))(function (_21) {
+          return Prelude.bind(Data_Maybe.bindMaybe)(Data_String.uncons(_21.tail))(function (_20) {
+              return Prelude.bind(Data_Maybe.bindMaybe)(Data_String.uncons(_20.tail))(function (_19) {
+                  return Prelude.bind(Data_Maybe.bindMaybe)(Data_String.uncons(_19.tail))(function (_18) {
+                      return Prelude.bind(Data_Maybe.bindMaybe)(Data_String.uncons(_18.tail))(function (_17) {
+                          return Prelude.bind(Data_Maybe.bindMaybe)((function () {
+                              var _37 = Prelude["=="](Prelude.eqChar)(_21.head)("0");
+                              if (_37) {
+                                  return new Data_Maybe.Just(1);
+                              };
+                              if (!_37) {
+                                  var _38 = Prelude["=="](Prelude.eqChar)(_21.head)("1");
+                                  if (_38) {
+                                      return new Data_Maybe.Just(-1);
+                                  };
+                                  if (!_38) {
+                                      return Data_Maybe.Nothing.value;
+                                  };
+                                  throw new Error("Failed pattern match: " + [ _38.constructor.name ]);
+                              };
+                              throw new Error("Failed pattern match at Machine line 198, column 1 - line 199, column 1: " + [ _37.constructor.name ]);
+                          })())(function (_16) {
+                              return Prelude.bind(Data_Maybe.bindMaybe)((function () {
+                                  var _40 = Prelude["=="](Prelude.eqChar)(_20.head)("0");
+                                  if (_40) {
+                                      return new Data_Maybe.Just(0);
+                                  };
+                                  if (!_40) {
+                                      var _41 = Prelude["=="](Prelude.eqChar)(_20.head)("1");
+                                      if (_41) {
+                                          return new Data_Maybe.Just(1);
+                                      };
+                                      if (!_41) {
+                                          return Data_Maybe.Nothing.value;
+                                      };
+                                      throw new Error("Failed pattern match: " + [ _41.constructor.name ]);
+                                  };
+                                  throw new Error("Failed pattern match at Machine line 198, column 1 - line 199, column 1: " + [ _40.constructor.name ]);
+                              })())(function (_15) {
+                                  return Prelude.bind(Data_Maybe.bindMaybe)((function () {
+                                      var _43 = Prelude["=="](Prelude.eqChar)(_19.head)("0");
+                                      if (_43) {
+                                          return new Data_Maybe.Just(0);
+                                      };
+                                      if (!_43) {
+                                          var _44 = Prelude["=="](Prelude.eqChar)(_19.head)("1");
+                                          if (_44) {
+                                              return new Data_Maybe.Just(1);
+                                          };
+                                          if (!_44) {
+                                              return Data_Maybe.Nothing.value;
+                                          };
+                                          throw new Error("Failed pattern match: " + [ _44.constructor.name ]);
+                                      };
+                                      throw new Error("Failed pattern match at Machine line 198, column 1 - line 199, column 1: " + [ _43.constructor.name ]);
+                                  })())(function (_14) {
+                                      return Prelude.bind(Data_Maybe.bindMaybe)((function () {
+                                          var _46 = Prelude["=="](Prelude.eqChar)(_18.head)("0");
+                                          if (_46) {
+                                              return new Data_Maybe.Just(0);
+                                          };
+                                          if (!_46) {
+                                              var _47 = Prelude["=="](Prelude.eqChar)(_18.head)("1");
+                                              if (_47) {
+                                                  return new Data_Maybe.Just(1);
+                                              };
+                                              if (!_47) {
+                                                  return Data_Maybe.Nothing.value;
+                                              };
+                                              throw new Error("Failed pattern match: " + [ _47.constructor.name ]);
+                                          };
+                                          throw new Error("Failed pattern match at Machine line 198, column 1 - line 199, column 1: " + [ _46.constructor.name ]);
+                                      })())(function (_13) {
+                                          return Prelude.bind(Data_Maybe.bindMaybe)((function () {
+                                              var _49 = Prelude["=="](Prelude.eqChar)(_17.head)("0");
+                                              if (_49) {
+                                                  return new Data_Maybe.Just(0);
+                                              };
+                                              if (!_49) {
+                                                  var _50 = Prelude["=="](Prelude.eqChar)(_17.head)("1");
+                                                  if (_50) {
+                                                      return new Data_Maybe.Just(1);
+                                                  };
+                                                  if (!_50) {
+                                                      return Data_Maybe.Nothing.value;
+                                                  };
+                                                  throw new Error("Failed pattern match: " + [ _50.constructor.name ]);
+                                              };
+                                              throw new Error("Failed pattern match at Machine line 198, column 1 - line 199, column 1: " + [ _49.constructor.name ]);
+                                          })())(function (_12) {
+                                              return Prelude.pure(Data_Maybe.applicativeMaybe)(((((_12 * 1 | 0) + (_13 * 2 | 0) | 0) + (_14 * 4 | 0) | 0) + (_15 * 8 | 0) | 0) * _16 | 0);
+                                          });
+                                      });
+                                  });
+                              });
+                          });
+                      });
+                  });
+              });
+          });
+      })));
+  };
+  var translate = function (txt) {
+      var _62 = new Utils.Tuple(Data_String.take(3)(txt), Data_String.drop(3)(txt));
+      if (_62.value0 === "111" && _62.value1 === "11111") {
+          return Prelude.pure(Data_Either.applicativeEither)(HALT.value);
+      };
+      if (_62.value0 === "010" && _62.value1 === "10101") {
+          return Prelude.pure(Data_Either.applicativeEither)(PRINT.value);
+      };
+      if (_62.value0 === "000" && _62.value1 === "00000") {
+          return Prelude.pure(Data_Either.applicativeEither)(EMPTY.value);
+      };
+      if (_62.value0 === "100") {
+          return Prelude["<$>"](Data_Either.functorEither)(PUSHVAL.create)(strBinToInt(_62.value1));
+      };
+      if (_62.value0 === "000" && _62.value1 === "10000") {
+          return Prelude.pure(Data_Either.applicativeEither)(PUSHIN.value);
+      };
+      if (_62.value0 === "001" && _62.value1 === "10001") {
+          return Prelude.pure(Data_Either.applicativeEither)(POPIN.value);
+      };
+      if (_62.value0 === "001" && _62.value1 === "10000") {
+          return Prelude.pure(Data_Either.applicativeEither)(POP.value);
+      };
+      if (_62.value0 === "000" && _62.value1 === "10001") {
+          return Prelude.pure(Data_Either.applicativeEither)(SKIP.value);
+      };
+      if (_62.value0 === "100" && _62.value1 === "10001") {
+          return Prelude.pure(Data_Either.applicativeEither)(SKIPIF.value);
+      };
+      if (_62.value0 === "001" && _62.value1 === "10011") {
+          return Prelude.pure(Data_Either.applicativeEither)(COMPARE.value);
+      };
+      if (_62.value0 === "100" && _62.value1 === "11001") {
+          return Prelude.pure(Data_Either.applicativeEither)(ADD.value);
+      };
+      if (_62.value0 === "011" && _62.value1 === "00110") {
+          return Prelude.pure(Data_Either.applicativeEither)(XOR.value);
+      };
+      return throwErr(UnknownInstruction.value);
+  };
+  var stack = Data_Lens_Lens.lens(function (_3) {
+      return _3.stack;
+  })(function (_4) {
+      return function (_5) {
+          var _87 = {};
+          for (var _88 in _4) {
+              if (_4.hasOwnProperty(_88)) {
+                  _87[_88] = _4[_88];
+              };
+          };
+          _87.stack = _5;
+          return _87;
+      };
+  });
+  var output = Data_Lens_Lens.lens(function (_9) {
+      return _9.output;
+  })(function (_10) {
+      return function (_11) {
+          var _90 = {};
+          for (var _91 in _10) {
+              if (_10.hasOwnProperty(_91)) {
+                  _90[_91] = _10[_91];
+              };
+          };
+          _90.output = _11;
+          return _90;
+      };
+  });
+  var moveBy = function (__copy_n) {
+      return function (__copy_zipp) {
+          var n = __copy_n;
+          var zipp = __copy_zipp;
+          tco: while (true) {
+              if (n > 0) {
+                  var __tco_n = n - 1;
+                  var __tco_zipp = Utils.snd(Zipper.next(zipp));
+                  n = __tco_n;
+                  zipp = __tco_zipp;
+                  continue tco;
+              };
+              if (n < 0) {
+                  var __tco_n = n + 1 | 0;
+                  var __tco_zipp = Utils.snd(Zipper.back(zipp));
+                  n = __tco_n;
+                  zipp = __tco_zipp;
+                  continue tco;
+              };
+              if (Prelude.otherwise) {
+                  return zipp;
+              };
+              throw new Error("Failed pattern match: " + [ n.constructor.name, zipp.constructor.name ]);
+          };
+      };
+  };
+  var mkMachine = function (inst) {
+      return function (input_1) {
+          var _94 = Data_List.uncons(inst);
+          if (_94 instanceof Data_Maybe.Nothing) {
+              return Data_Maybe.Nothing.value;
+          };
+          if (_94 instanceof Data_Maybe.Just) {
+              return new Data_Maybe.Just({
+                  code: Zipper.zipper(_94.value0.head)(Data_List.Nil.value)(_94.value0.tail), 
+                  stack: Data_List.Nil.value, 
+                  input: input_1, 
+                  output: Data_List.Nil.value
+              });
+          };
+          throw new Error("Failed pattern match at Machine line 21, column 1 - line 22, column 1: " + [ _94.constructor.name ]);
+      };
+  };
+  var input = Data_Lens_Lens.lens(function (_6) {
+      return _6.input;
+  })(function (_7) {
+      return function (_8) {
+          var _98 = {};
+          for (var _99 in _7) {
+              if (_7.hasOwnProperty(_99)) {
+                  _98[_99] = _7[_99];
+              };
+          };
+          _98.input = _8;
+          return _98;
+      };
+  });
+  var code = Data_Lens_Lens.lens(function (_0) {
+      return _0.code;
+  })(function (_1) {
+      return function (_2) {
+          var _100 = {};
+          for (var _101 in _1) {
+              if (_1.hasOwnProperty(_101)) {
+                  _100[_101] = _1[_101];
+              };
+          };
+          _100.code = _2;
+          return _100;
+      };
+  });
+  var movePC = function (machine) {
+      var _102 = Zipper.current(machine.code);
+      if (_102 instanceof HALT) {
+          return Prelude.pure(Data_Either.applicativeEither)(machine);
+      };
+      if (_102 instanceof PRINT) {
+          return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(code(Data_Profunctor_Strong.strongFn))(moveBy(1))(machine));
+      };
+      if (_102 instanceof PUSHVAL) {
+          return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(code(Data_Profunctor_Strong.strongFn))(moveBy(1))(machine));
+      };
+      if (_102 instanceof PUSHIN) {
+          return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(code(Data_Profunctor_Strong.strongFn))(moveBy(1))(machine));
+      };
+      if (_102 instanceof POPIN) {
+          return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(code(Data_Profunctor_Strong.strongFn))(moveBy(1))(machine));
+      };
+      if (_102 instanceof POP) {
+          return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(code(Data_Profunctor_Strong.strongFn))(moveBy(1))(machine));
+      };
+      if (_102 instanceof SKIP) {
+          return Data_Maybe.maybe(throwErr(StackUnderflow.value))(function (x) {
+              return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(code(Data_Profunctor_Strong.strongFn))(moveBy(x))(machine));
+          })(Data_List.head(machine.stack));
+      };
+      if (_102 instanceof COMPARE) {
+          return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(code(Data_Profunctor_Strong.strongFn))(moveBy(1))(machine));
+      };
+      if (_102 instanceof SKIPIF) {
+          return Data_Maybe.maybe(throwErr(StackUnderflow.value))(function (x) {
+              return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(code(Data_Profunctor_Strong.strongFn))((function () {
+                  var _104 = x === 0;
+                  if (_104) {
+                      return moveBy(x);
+                  };
+                  if (!_104) {
+                      return moveBy(1);
+                  };
+                  throw new Error("Failed pattern match at Machine line 116, column 1 - line 117, column 1: " + [ _104.constructor.name ]);
+              })())(machine));
+          })(Data_List.head(machine.stack));
+      };
+      if (_102 instanceof ADD) {
+          return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(code(Data_Profunctor_Strong.strongFn))(moveBy(1))(machine));
+      };
+      if (_102 instanceof XOR) {
+          return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(code(Data_Profunctor_Strong.strongFn))(moveBy(1))(machine));
+      };
+      if (_102 instanceof EMPTY) {
+          return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(code(Data_Profunctor_Strong.strongFn))(moveBy(1))(machine));
+      };
+      throw new Error("Failed pattern match at Machine line 116, column 1 - line 117, column 1: " + [ _102.constructor.name ]);
+  };
+  var $$eval = function (machine) {
+      return Control_Bind["=<<"](Data_Either.bindEither)(movePC)((function () {
+          var _105 = Zipper.current(machine.code);
+          if (_105 instanceof HALT) {
+              return Prelude.pure(Data_Either.applicativeEither)(machine);
+          };
+          if (_105 instanceof SKIP) {
+              return Prelude.pure(Data_Either.applicativeEither)(machine);
+          };
+          if (_105 instanceof SKIPIF) {
+              return Prelude.pure(Data_Either.applicativeEither)(machine);
+          };
+          if (_105 instanceof PRINT) {
+              return Data_Maybe.maybe(throwErr(StackUnderflow.value))(function (x) {
+                  return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(output(Data_Profunctor_Strong.strongFn))(Data_List.Cons.create(x))(machine));
+              })(Data_List.head(machine.stack));
+          };
+          if (_105 instanceof EMPTY) {
+              return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(stack(Data_Profunctor_Strong.strongFn))(function (s) {
+                  var _106 = Data_List["null"](s);
+                  if (_106) {
+                      return new Data_List.Cons(0, s);
+                  };
+                  if (!_106) {
+                      return new Data_List.Cons(1, s);
+                  };
+                  throw new Error("Failed pattern match at Machine line 77, column 1 - line 78, column 1: " + [ _106.constructor.name ]);
+              })(machine));
+          };
+          if (_105 instanceof PUSHVAL) {
+              return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(stack(Data_Profunctor_Strong.strongFn))(Data_List.Cons.create(_105.value0))(machine));
+          };
+          if (_105 instanceof PUSHIN) {
+              return Data_Maybe.maybe(throwErr(InputError.value))(function (x) {
+                  return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(stack(Data_Profunctor_Strong.strongFn))(Data_List.Cons.create(x))(machine));
+              })(Data_List.head(machine.input));
+          };
+          if (_105 instanceof POPIN) {
+              return Data_Maybe.maybe(throwErr(InputError.value))(function (i) {
+                  return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.set(input(Data_Profunctor_Strong.strongFn))(i)(machine));
+              })(Data_List.tail(machine.input));
+          };
+          if (_105 instanceof POP) {
+              return Data_Maybe.maybe(throwErr(StackUnderflow.value))(function (s) {
+                  return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.set(stack(Data_Profunctor_Strong.strongFn))(s)(machine));
+              })(Data_List.tail(machine.stack));
+          };
+          if (_105 instanceof XOR) {
+              return Data_Maybe.maybe(throwErr(StackUnderflow.value))(function (_22) {
+                  return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(stack(Data_Profunctor_Strong.strongFn))(Data_List.Cons.create(_22.value0 + _22.value1 | 0))(machine));
+              })(takeTwo(machine.stack));
+          };
+          if (_105 instanceof ADD) {
+              return Data_Maybe.maybe(throwErr(StackUnderflow.value))(function (_23) {
+                  return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(stack(Data_Profunctor_Strong.strongFn))(Data_List.Cons.create(_23.value0 + _23.value1 | 0))(machine));
+              })(takeTwo(machine.stack));
+          };
+          if (_105 instanceof COMPARE) {
+              return Data_Maybe.maybe(throwErr(StackUnderflow.value))(function (_24) {
+                  return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(stack(Data_Profunctor_Strong.strongFn))(Data_List.Cons.create((function () {
+                      var _115 = _24.value0 === _24.value1;
+                      if (_115) {
+                          return 0;
+                      };
+                      if (!_115) {
+                          var _116 = _24.value0 > _24.value1;
+                          if (_116) {
+                              return 1;
+                          };
+                          if (!_116) {
+                              return -1;
+                          };
+                          throw new Error("Failed pattern match: " + [ _116.constructor.name ]);
+                      };
+                      throw new Error("Failed pattern match at Machine line 77, column 1 - line 78, column 1: " + [ _115.constructor.name ]);
+                  })()))(machine));
+              })(takeTwo(machine.stack));
+          };
+          throw new Error("Failed pattern match at Machine line 77, column 1 - line 78, column 1: " + [ _105.constructor.name ]);
+      })());
+  };
+  var halted = function (machine) {
+      var _119 = Zipper.current(machine.code);
+      if (_119 instanceof HALT) {
+          return true;
+      };
+      return Data_Either.isLeft($$eval(machine));
+  };
+  exports["StackUnderflow"] = StackUnderflow;
+  exports["UnknownInstruction"] = UnknownInstruction;
+  exports["InputError"] = InputError;
+  exports["HALT"] = HALT;
+  exports["PRINT"] = PRINT;
+  exports["PUSHVAL"] = PUSHVAL;
+  exports["PUSHIN"] = PUSHIN;
+  exports["POPIN"] = POPIN;
+  exports["POP"] = POP;
+  exports["SKIP"] = SKIP;
+  exports["SKIPIF"] = SKIPIF;
+  exports["COMPARE"] = COMPARE;
+  exports["ADD"] = ADD;
+  exports["XOR"] = XOR;
+  exports["EMPTY"] = EMPTY;
+  exports["strBinToInt"] = strBinToInt;
+  exports["translate"] = translate;
+  exports["halted"] = halted;
+  exports["moveBy"] = moveBy;
+  exports["movePC"] = movePC;
+  exports["takeTwo"] = takeTwo;
+  exports["eval"] = $$eval;
+  exports["throwErr"] = throwErr;
+  exports["output"] = output;
+  exports["input"] = input;
+  exports["stack"] = stack;
+  exports["code"] = code;
+  exports["mkMachine"] = mkMachine;;
+ 
+})(PS["Machine"] = PS["Machine"] || {});
+(function(exports) {
+  // Generated by psc version 0.7.6.1
+  "use strict";
   var Prelude = PS["Prelude"];
   var Data_Lens = PS["Data.Lens"];
   var Data_Array = PS["Data.Array"];
@@ -2129,7 +2916,7 @@ var PS = { };
           pos: position, 
           size: size, 
           speed: 1.0, 
-          bgcolor: "#2B2C2B", 
+          bgcolor: "rgba(0,0,0,0.7)", 
           color: "white", 
           text: str, 
           state: ShowAll.value
@@ -2219,7 +3006,7 @@ var PS = { };
           throw new Error("Failed pattern match at Screen line 39, column 1 - line 40, column 1: " + [ _3.constructor.name ]);
       };
   };
-  var intro = "Welcome to <Company>.\n\nFor the past 20 our scientists and engineers have been working on a top secret project.\n\nAt last, they have succeeded in creating a marvelous machine, a computing machine.\n\nWe call it 'The Computing Machine'.\n\nYou had the fortune to be selected as one of the chosen few to operate The Computing Machine.\n\nAt <Company>, we have a lot of challenges waiting to be solved.\n\nFortunately for you, The Computing Machine is really simple to operate, it only has two buttons!\n\nAll you have to do is insert the right combination of the two buttons, and The Computing Machine will do the rest!\n\nGood Luck!";
+  var intro = "Welcome to <Company>.\n\nFor the past 40 years our scientists and engineers have been working on a top secret project.\n\nAt last, they have succeeded in creating a marvelous machine, a computing machine.\n\nWe call it 'The Computing Machine'.\n\nYou had the fortune to be selected as one of the chosen few to operate The Computing Machine.\n\nAt <Company>, we have a lot of challenges waiting to be solved.\n\nFortunately for you, The Computing Machine is really simple to operate, it only has two buttons!\n\nAll you have to do is insert the right combination of the two buttons, and The Computing Machine will do the rest!\n\nGood Luck!";
   exports["renderScreen"] = renderScreen;
   exports["intro"] = intro;
   exports["scrArr"] = scrArr;
@@ -2237,18 +3024,27 @@ var PS = { };
   var Data_Int = PS["Data.Int"];
   var Data_Lens = PS["Data.Lens"];
   var Data_Maybe = PS["Data.Maybe"];
+  var Data_Either = PS["Data.Either"];
   var Data_Traversable = PS["Data.Traversable"];
   var Data_List = PS["Data.List"];
   var Data_String = PS["Data.String"];
   var Control_Monad_Eff = PS["Control.Monad.Eff"];
   var Control_Monad_Aff = PS["Control.Monad.Aff"];
   var Graphics_Canvas = PS["Graphics.Canvas"];
+  var Utils = PS["Utils"];
   var CanvasUtils = PS["CanvasUtils"];
   var Zipper = PS["Zipper"];
   var TextBar = PS["TextBar"];
   var Input = PS["Input"];
   var Machine = PS["Machine"];
-  var Data_Profunctor_Strong = PS["Data.Profunctor.Strong"];     
+  var Data_Profunctor_Strong = PS["Data.Profunctor.Strong"];
+  var ShowMachine = (function () {
+      function ShowMachine() {
+
+      };
+      ShowMachine.value = new ShowMachine();
+      return ShowMachine;
+  })();
   var zeroButton = {
       pos: {
           x: 315.0, 
@@ -2258,6 +3054,90 @@ var PS = { };
           x: 131.0, 
           y: 80.0
       }
+  };
+  var tryEval = function (machine) {
+      var _7 = Machine["eval"](machine);
+      if (_7 instanceof Data_Either.Left) {
+          return machine;
+      };
+      if (_7 instanceof Data_Either.Right) {
+          return _7.value0;
+      };
+      throw new Error("Failed pattern match at SimScreen line 145, column 1 - line 146, column 1: " + [ _7.constructor.name ]);
+  };
+  var startMachine = function (input) {
+      return function (state) {
+          var _10 = input.screenDir > 0.0;
+          if (_10) {
+              var _11 = Data_Maybe.isJust(state.machine);
+              if (_11) {
+                  var _12 = {};
+                  for (var _13 in state) {
+                      if (state.hasOwnProperty(_13)) {
+                          _12[_13] = state[_13];
+                      };
+                  };
+                  _12.machine = Data_Maybe.Nothing.value;
+                  return _12;
+              };
+              if (!_11) {
+                  var insts = Data_Traversable.traverse(Data_List.traversableList)(Data_Either.applicativeEither)(Machine.translate)(Data_List.reverse(state.code));
+                  if (insts instanceof Data_Either.Left) {
+                      return state;
+                  };
+                  if (insts instanceof Data_Either.Right) {
+                      var _16 = {};
+                      for (var _17 in state) {
+                          if (state.hasOwnProperty(_17)) {
+                              _16[_17] = state[_17];
+                          };
+                      };
+                      _16.machine = Machine.mkMachine(insts.value0)(state.inputs);
+                      return _16;
+                  };
+                  throw new Error("Failed pattern match: " + [ insts.constructor.name ]);
+              };
+              throw new Error("Failed pattern match: " + [ _11.constructor.name ]);
+          };
+          if (!_10) {
+              return state;
+          };
+          throw new Error("Failed pattern match at SimScreen line 133, column 1 - line 134, column 1: " + [ _10.constructor.name ]);
+      };
+  };
+  var updateMachine = function (input) {
+      return function (state) {
+          if (state.machine instanceof Data_Maybe.Just) {
+              var _20 = Machine.halted(state.machine.value0);
+              if (_20) {
+                  var _21 = {};
+                  for (var _22 in state) {
+                      if (state.hasOwnProperty(_22)) {
+                          _21[_22] = state[_22];
+                      };
+                  };
+                  _21.outputs = state.machine.value0.output;
+                  return _21;
+              };
+              if (!_20) {
+                  return startMachine(input)((function () {
+                      var _23 = {};
+                      for (var _24 in state) {
+                          if (state.hasOwnProperty(_24)) {
+                              _23[_24] = state[_24];
+                          };
+                      };
+                      _23.machine = Prelude.pure(Data_Maybe.applicativeMaybe)(tryEval(state.machine.value0));
+                      return _23;
+                  })());
+              };
+              throw new Error("Failed pattern match at SimScreen line 122, column 1 - line 123, column 1: " + [ _20.constructor.name ]);
+          };
+          if (state.machine instanceof Data_Maybe.Nothing) {
+              return startMachine(input)(state);
+          };
+          throw new Error("Failed pattern match at SimScreen line 122, column 1 - line 123, column 1: " + [ state.machine.constructor.name ]);
+      };
   };
   var oneButton = {
       pos: {
@@ -2274,27 +3154,27 @@ var PS = { };
           return i;
       };
       if (i.mouseClick instanceof Data_Maybe.Just) {
-          var _8 = CanvasUtils.pointInRect(i.mouseClick.value0)(zeroButton);
-          if (_8) {
-              return Data_Lens_Setter.set(function (_18) {
-                  return Input.zeroOne(Data_Profunctor_Strong.strongFn)(Input.zero(Data_Profunctor_Strong.strongFn)(_18));
+          var _27 = CanvasUtils.pointInRect(i.mouseClick.value0)(zeroButton);
+          if (_27) {
+              return Data_Lens_Setter.set(function (_37) {
+                  return Input.zeroOne(Data_Profunctor_Strong.strongFn)(Input.zero(Data_Profunctor_Strong.strongFn)(_37));
               })(true)(i);
           };
-          if (!_8) {
-              var _9 = CanvasUtils.pointInRect(i.mouseClick.value0)(oneButton);
-              if (_9) {
-                  return Data_Lens_Setter.set(function (_19) {
-                      return Input.zeroOne(Data_Profunctor_Strong.strongFn)(Input.one(Data_Profunctor_Strong.strongFn)(_19));
+          if (!_27) {
+              var _28 = CanvasUtils.pointInRect(i.mouseClick.value0)(oneButton);
+              if (_28) {
+                  return Data_Lens_Setter.set(function (_38) {
+                      return Input.zeroOne(Data_Profunctor_Strong.strongFn)(Input.one(Data_Profunctor_Strong.strongFn)(_38));
                   })(true)(i);
               };
-              if (!_9) {
+              if (!_28) {
                   return i;
               };
-              throw new Error("Failed pattern match: " + [ _9.constructor.name ]);
+              throw new Error("Failed pattern match: " + [ _28.constructor.name ]);
           };
-          throw new Error("Failed pattern match at SimScreen line 82, column 1 - line 94, column 1: " + [ _8.constructor.name ]);
+          throw new Error("Failed pattern match at SimScreen line 93, column 1 - line 105, column 1: " + [ _27.constructor.name ]);
       };
-      throw new Error("Failed pattern match at SimScreen line 82, column 1 - line 94, column 1: " + [ i.mouseClick.constructor.name ]);
+      throw new Error("Failed pattern match at SimScreen line 93, column 1 - line 105, column 1: " + [ i.mouseClick.constructor.name ]);
   };
   var mkSimScreen = function (img) {
       return {
@@ -2305,13 +3185,38 @@ var PS = { };
           inputs: Data_List.Nil.value, 
           outputs: Data_List.Nil.value, 
           machine: Data_Maybe.Nothing.value, 
-          tests: Data_List.Nil.value
+          tests: Data_List.Nil.value, 
+          state: ShowMachine.value
       };
   };                                                                                                                       
-  var getPosition = function (i) {
-      return {
-          x: 350.0 + 100.0 * Data_Int.toNumber(Prelude.div(Prelude.moduloSemiringInt)(i)(8)), 
-          y: 230.0 + 30.0 * Data_Int.toNumber(i % 8)
+  var getPosition = function (x) {
+      return function (y) {
+          return function (i) {
+              return {
+                  x: x + 100.0 * Data_Int.toNumber(Prelude.div(Prelude.moduloSemiringInt)(i)(8)), 
+                  y: y + 30.0 * Data_Int.toNumber(i % 8)
+              };
+          };
+      };
+  };
+  var renderOutput = function (ctx) {
+      return function (screen) {
+          return function __do() {
+              Graphics_Canvas.setFillStyle("rgba(235,235,255,0.9)")(ctx)();
+              Graphics_Canvas.fillRect(ctx)({
+                  x: 700.0, 
+                  y: 100.0, 
+                  w: 300.0, 
+                  h: 400.0
+              })();
+              Graphics_Canvas.setFillStyle("#004499")(ctx)();
+              Data_Traversable.sequence(Data_List.traversableList)(Control_Monad_Eff.applicativeEff)(Data_List.zipWith(function (p) {
+                  return function (txt) {
+                      return Graphics_Canvas.fillText(ctx)(txt)(p.x)(p.y);
+                  };
+              })(Prelude.map(Data_List.functorList)(getPosition(740.0)(150.0))(Data_List.range(0)(8)))(Data_List.reverse(Prelude.map(Data_List.functorList)(Prelude.show(Prelude.showInt))(screen.outputs))))();
+              return Prelude.unit;
+          };
       };
   };
   var render = function (ctx) {
@@ -2323,9 +3228,10 @@ var PS = { };
                   return function (txt) {
                       return Graphics_Canvas.fillText(ctx)(txt)(p.x)(p.y);
                   };
-              })(Prelude.map(Data_List.functorList)(getPosition)(Data_List.range(0)(40)))(Data_List.reverse(screen.code)))();
+              })(Prelude.map(Data_List.functorList)(getPosition(350.0)(230.0))(Data_List.range(0)(40)))(Data_List.reverse(screen.code)))();
               Graphics_Canvas.setFillStyle("#DD4499")(ctx)();
               Graphics_Canvas.fillText(ctx)("> " + screen.currLine)(350.0)(230.0 + 30.0 * 8.0)();
+              renderOutput(ctx)(screen)();
               return Prelude.unit;
           };
       };
@@ -2337,33 +3243,32 @@ var PS = { };
       return _0.currLine;
   })(function (_1) {
       return function (_2) {
-          var _11 = {};
-          for (var _12 in _1) {
-              if (_1.hasOwnProperty(_12)) {
-                  _11[_12] = _1[_12];
+          var _30 = {};
+          for (var _31 in _1) {
+              if (_1.hasOwnProperty(_31)) {
+                  _30[_31] = _1[_31];
               };
           };
-          _11.currLine = _2;
-          return _11;
+          _30.currLine = _2;
+          return _30;
       };
   });
   var code = Data_Lens_Lens.lens(function (_3) {
       return _3.code;
   })(function (_4) {
       return function (_5) {
-          var _13 = {};
-          for (var _14 in _4) {
-              if (_4.hasOwnProperty(_14)) {
-                  _13[_14] = _4[_14];
+          var _32 = {};
+          for (var _33 in _4) {
+              if (_4.hasOwnProperty(_33)) {
+                  _32[_33] = _4[_33];
               };
           };
-          _13.code = _5;
-          return _13;
+          _32.code = _5;
+          return _32;
       };
   });
-  var update = function (i) {
+  var updateCode = function (input) {
       return function (state) {
-          var input = updateMouseInput(i);
           var line = state.currLine + (function () {
               if (input.zeroOne.zero) {
                   return "0";
@@ -2379,22 +3284,34 @@ var PS = { };
                       throw new Error("Failed pattern match: " + [ input.zeroOne.one.constructor.name ]);
                   })();
               };
-              throw new Error("Failed pattern match at SimScreen line 94, column 1 - line 95, column 1: " + [ input.zeroOne.zero.constructor.name ]);
+              throw new Error("Failed pattern match at SimScreen line 114, column 7 - line 115, column 3: " + [ input.zeroOne.zero.constructor.name ]);
           })();
-          var _17 = Data_String.length(line) >= 8;
-          if (_17) {
+          var _36 = Data_String.length(line) >= 8;
+          if (_36) {
               return Data_Lens_Setter.over(code(Data_Profunctor_Strong.strongFn))(Data_List.Cons.create(Data_String.take(8)(line)))(Data_Lens_Setter.set(currLine(Data_Profunctor_Strong.strongFn))(Data_String.drop(8)(line))(state));
           };
-          if (!_17) {
+          if (!_36) {
               return Data_Lens_Setter.set(currLine(Data_Profunctor_Strong.strongFn))(line)(state);
           };
-          throw new Error("Failed pattern match at SimScreen line 94, column 1 - line 95, column 1: " + [ _17.constructor.name ]);
+          throw new Error("Failed pattern match at SimScreen line 112, column 1 - line 113, column 1: " + [ _36.constructor.name ]);
       };
   };
+  var update = function (i) {
+      return function (state) {
+          var input = updateMouseInput(i);
+          return updateMachine(input)(updateCode(input)(state));
+      };
+  };
+  exports["ShowMachine"] = ShowMachine;
   exports["code"] = code;
   exports["currLine"] = currLine;
+  exports["renderOutput"] = renderOutput;
   exports["getPosition"] = getPosition;
   exports["render"] = render;
+  exports["tryEval"] = tryEval;
+  exports["startMachine"] = startMachine;
+  exports["updateMachine"] = updateMachine;
+  exports["updateCode"] = updateCode;
   exports["update"] = update;
   exports["updateMouseInput"] = updateMouseInput;
   exports["oneButton"] = oneButton;
@@ -2518,7 +3435,7 @@ var PS = { };
   var update = function (input) {
       return function (_6) {
           if (_6 instanceof Screens) {
-              var _26 = input.screenDir > 0.0 && finished(_6.value0);
+              var _26 = (input.screenDir > 0.0 || Data_Maybe.isJust(input.mouseClick)) && finished(_6.value0);
               if (_26) {
                   return new Wait(input.time, _6.value1);
               };
@@ -2541,7 +3458,7 @@ var PS = { };
               return Simulation.create(SimScreen.update(input)(_6.value0));
           };
           if (_6 instanceof VNScreen) {
-              var _33 = input.screenDir > 0.0;
+              var _33 = input.screenDir > 0.0 || Data_Maybe.isJust(input.mouseClick);
               if (_33) {
                   return VNScreen.create(Utils.snd(Zipper.next(_6.value0)));
               };

@@ -55,7 +55,7 @@ initialState = do
 
 update :: I.Input -> State -> State
 update input currState@(Screens currScreen nextScreen) =
-  if input.screenDir > 0.0 && finished currScreen
+  if (input.screenDir > 0.0 || isJust input.mouseClick) && finished currScreen
   then Wait input.time nextScreen
   else Screens (update input currScreen) nextScreen
 update input currState@(Wait t nextState) =
@@ -64,23 +64,12 @@ update input currState@(Wait t nextState) =
   else currState
 update input (Simulation sim) = Simulation $ Sim.update input sim
 update input state@(VNScreen screens) =
-  if input.screenDir > 0.0 then
+  if input.screenDir > 0.0 || isJust input.mouseClick then
     (VNScreen <<< snd <<< next) screens
   else if input.screenDir < 0.0 then
     (VNScreen <<< snd <<< back) screens
   else
     state
-{-
-update input state@(VNScreen screens) =
-  if input.screenDir > 0.0
-  then
-    (Wait input.time <<< VNScreen <<< snd <<< next) screens
-  else if input.screenDir < 0.0
-  then
-    (Wait input.time <<< VNScreen <<< snd <<< back) screens
-  else
-    state
--}
 
 ------------
 -- Render
