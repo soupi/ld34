@@ -30,3 +30,6 @@ back zipp@(Zipper curr before after) =
     Cons x xs ->
       Tuple true $ Zipper x xs (Cons curr after)
 
+start :: forall a. Zipper a -> Zipper a
+start zipp@(Zipper _ Nil _) = zipp
+start zipp = start (snd $ back zipp)

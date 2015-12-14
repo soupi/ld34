@@ -5,10 +5,7 @@ import Prelude hiding (zero, one)
 import Data.Lens
 import Data.Int
 import Data.Maybe
-import Data.Foldable
-import Data.Traversable
 import Control.Apply
-import Control.Monad.Eff
 import Signal as S
 import Signal.Time as S
 import Signal.DOM as S
@@ -26,6 +23,7 @@ input = do
   mouse <- mouseClick
   winDim <- S.windowDimensions
   ioSignal <- io
+  rt <- tKey
   pure $ S.sampleOn frames
         (buildInput
          <$> time
@@ -35,7 +33,8 @@ input = do
          <*> once o
          <*> mouse
          <*> winDim
-         <*> ioSignal)
+         <*> ioSignal
+         <*> rt)
 
 type Input
   = { arrows  :: Point
@@ -44,15 +43,17 @@ type Input
     , zeroOne :: ZeroOne
     , mouseClick :: Maybe Point
     , io :: Tuple Boolean Boolean
+    , runTests :: Boolean
     }
 
-buildInput :: S.Time -> Point -> Number -> Boolean -> Boolean -> Maybe Point -> S.DimensionPair -> Tuple Boolean Boolean -> Input
-buildInput t a sdir z o m winDim io =
+buildInput :: S.Time -> Point -> Number -> Boolean -> Boolean -> Maybe Point -> S.DimensionPair -> Tuple Boolean Boolean -> Boolean -> Input
+buildInput t a sdir z o m winDim io rt =
   { arrows: a
   , time: t
   , screenDir: sdir
   , zeroOne: { zero: z, one: o }
   , io: io
+  , runTests: rt
   , mouseClick: map (\p -> { x: p.x - ((toNumber winDim.w - width) / 2.0)
                            , y: p.y - 5.0 }) m
   }
@@ -79,6 +80,11 @@ escKeyCode = 27
 
 iKeyCode = 73
 oKeyCode = 79
+
+tKeyCode = 84
+
+tKey = do
+  once <$> S.keyPressed tKeyCode
 
 io = do
   i <- S.keyPressed iKeyCode

@@ -52,7 +52,6 @@ data Instruction
   | PRINT -- print top value on the stack (push to output)
   | PUSHVAL Int -- pushes an imediate value to the stack
   | PUSHIN -- push value from input to the stack
-  | POPIN -- discard from input
   | POP -- discard from stack
   | SKIP -- go foreward N times in code, N = top of the stack (Negative N means backwards)
   | SKIPIF -- SKIPs if value before top of the stack is zero
@@ -90,9 +89,8 @@ eval machine =
         PUSHVAL n ->
           pure $ over stack (Cons n) machine
         PUSHIN ->
+          (\machine -> maybe (throwErr InputError) (\i -> pure $ set input i machine) (tail machine.input)) =<<
           maybe (throwErr InputError) (\x -> pure $ over stack (Cons x) machine) (head machine.input)
-        POPIN  ->
-          maybe (throwErr InputError) (\i -> pure $ set input i machine) (tail machine.input)
         POP ->
           maybe (throwErr StackUnderflow) (\s -> pure $ set stack s machine) (tail machine.stack)
         ADD ->
@@ -118,8 +116,6 @@ movePC machine =
     PUSHVAL _ ->
       pure $ over code (moveBy 1) machine
     PUSHIN ->
-      pure $ over code (moveBy 1) machine
-    POPIN ->
       pure $ over code (moveBy 1) machine
     POP ->
       pure $ over code (moveBy 1) machine
@@ -155,6 +151,11 @@ halted machine =
     HALT -> true
     _    -> isLeft $ eval machine
 
+hasErrors :: Machine -> Maybe Error
+hasErrors machine =
+  case eval machine of
+    Left err -> Just err
+    Right _  -> Nothing
 
 translate :: String -> Either Error Instruction
 translate txt =
@@ -169,8 +170,6 @@ translate txt =
       PUSHVAL <$> strBinToInt str
     Tuple "000" "10000" ->
       pure PUSHIN
-    Tuple "001" "10001" ->
-      pure POPIN
     Tuple "001" "10000" ->
       pure POP
     Tuple "000" "10001" ->

@@ -2,6 +2,7 @@ module Main where
 
 import Prelude
 
+import Data.List (List(..))
 import Data.Maybe
 import Control.Monad.Eff
 import Control.Monad.Aff
@@ -40,14 +41,27 @@ finished :: State -> Boolean
 finished (VNScreen zipp) = not $ fst $ next zipp
 finished (Wait _ _) = false
 finished (Simulation sim) = Sim.done sim
-finished (Screens s _) = finished s
+finished (Screens s1 s2) = finished s1 && finished s2
 
 initialState :: Aff _ State
 initialState = do
   comp <- loadImageData "assets/comp2.png"
   pure $
-    Screens (VNScreen $ screens comp intro)
-            (Simulation $ Sim.mkSimScreen comp)
+    Screens
+      (VNScreen $ screens comp intro) $
+      mission01 comp
+
+mission01 comp =
+  Screens
+     (VNScreen $ screens comp mission01_text)
+     (Simulation $ Sim.mkSimScreen (zipper {input: Nil, output: Cons 5 Nil} Nil Nil) comp)
+
+mission01_text =
+  """
+Your first mission is to print the number 5 (00101).
+
+We are counting on you!
+"""
 
 ------------
 -- Update
