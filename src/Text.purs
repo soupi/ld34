@@ -49,7 +49,7 @@ mkText str =
     { pos: position
     , size: size
     , speed: 1.0
-    , bgcolor: "#2B2C2B"
+    , bgcolor: "rgba(0,0,0,0.7)"
     , color: "white"
     , text: str
     , state: ShowAll

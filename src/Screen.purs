@@ -53,7 +53,7 @@ intro :: String
 intro =
   """Welcome to <Company>.
 
-For the past 20 our scientists and engineers have been working on a top secret project.
+For the past 40 years our scientists and engineers have been working on a top secret project.
 
 At last, they have succeeded in creating a marvelous machine, a computing machine.
 
