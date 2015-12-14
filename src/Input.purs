@@ -70,11 +70,11 @@ upKeyCode = 38
 downKeyCode = 40
 
 enterKeyCode = 13
-backspaceKeyCode = 8
+escKeyCode = 27
 
 screenDirection = do
   foreward <- S.keyPressed enterKeyCode
-  back <- S.keyPressed backspaceKeyCode
+  back <- S.keyPressed escKeyCode
   pure $  (\f b -> asNum f - asNum b)
       <$> once foreward
       <*> once back
@@ -83,7 +83,6 @@ asNum b = if b then 1.0 else 0.0
 
 type ZeroOne
   = { zero :: Boolean, one :: Boolean }
-
 
 zero' = do
   z  <- S.keyPressed 48

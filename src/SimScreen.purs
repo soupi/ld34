@@ -121,6 +121,7 @@ updateCode input state =
 
 updateMachine :: I.Input -> SimScreen -> SimScreen
 updateMachine input state =
+  resetMachine input $
   case state.machine of
     Just m ->
       if M.halted m then
@@ -147,6 +148,14 @@ tryEval machine =
   case M.eval machine of
     Left _ -> machine
     Right m -> m
+
+resetMachine :: I.Input -> SimScreen -> SimScreen
+resetMachine input state =
+  if input.screenDir < 0.0 then
+    state { machine = Nothing, code = List.Nil, outputs = List.Nil }
+  else
+    state
+
 
 ------------
 -- Render

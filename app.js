@@ -2130,11 +2130,12 @@ var PS = { };
               if (!d) {
                   return Data_Maybe.Nothing.value;
               };
-              throw new Error("Failed pattern match at Input line 102, column 1 - line 110, column 1: " + [ d.constructor.name ]);
+              throw new Error("Failed pattern match at Input line 101, column 1 - line 109, column 1: " + [ d.constructor.name ]);
           };
       })(_27))(once(_26));
   };
   var leftKeyCode = 37;
+  var escKeyCode = 27;
   var enterKeyCode = 13;
   var downKeyCode = 40;
   var buildInput = function (t) {
@@ -2166,7 +2167,6 @@ var PS = { };
           };
       };
   };
-  var backspaceKeyCode = 8;
   var asNum = function (b) {
       if (b) {
           return 1.0;
@@ -2178,7 +2178,7 @@ var PS = { };
   };
   var screenDirection = function __do() {
       var _21 = Signal_DOM.keyPressed(enterKeyCode)();
-      var _20 = Signal_DOM.keyPressed(backspaceKeyCode)();
+      var _20 = Signal_DOM.keyPressed(escKeyCode)();
       return Prelude["<*>"](Signal.applySignal)(Prelude["<$>"](Signal.functorSignal)(function (f) {
           return function (b) {
               return asNum(f) - asNum(b);
@@ -2225,7 +2225,7 @@ var PS = { };
   exports["mouseClick"] = mouseClick;
   exports["asNum"] = asNum;
   exports["screenDirection"] = screenDirection;
-  exports["backspaceKeyCode"] = backspaceKeyCode;
+  exports["escKeyCode"] = escKeyCode;
   exports["enterKeyCode"] = enterKeyCode;
   exports["downKeyCode"] = downKeyCode;
   exports["upKeyCode"] = upKeyCode;
@@ -3063,7 +3063,7 @@ var PS = { };
       if (_7 instanceof Data_Either.Right) {
           return _7.value0;
       };
-      throw new Error("Failed pattern match at SimScreen line 145, column 1 - line 146, column 1: " + [ _7.constructor.name ]);
+      throw new Error("Failed pattern match at SimScreen line 146, column 1 - line 147, column 1: " + [ _7.constructor.name ]);
   };
   var startMachine = function (input) {
       return function (state) {
@@ -3102,41 +3102,64 @@ var PS = { };
           if (!_10) {
               return state;
           };
-          throw new Error("Failed pattern match at SimScreen line 133, column 1 - line 134, column 1: " + [ _10.constructor.name ]);
+          throw new Error("Failed pattern match at SimScreen line 134, column 1 - line 135, column 1: " + [ _10.constructor.name ]);
+      };
+  };
+  var resetMachine = function (input) {
+      return function (state) {
+          var _19 = input.screenDir < 0.0;
+          if (_19) {
+              var _20 = {};
+              for (var _21 in state) {
+                  if (state.hasOwnProperty(_21)) {
+                      _20[_21] = state[_21];
+                  };
+              };
+              _20.machine = Data_Maybe.Nothing.value;
+              _20.code = Data_List.Nil.value;
+              _20.outputs = Data_List.Nil.value;
+              return _20;
+          };
+          if (!_19) {
+              return state;
+          };
+          throw new Error("Failed pattern match at SimScreen line 152, column 1 - line 153, column 1: " + [ _19.constructor.name ]);
       };
   };
   var updateMachine = function (input) {
       return function (state) {
-          if (state.machine instanceof Data_Maybe.Just) {
-              var _20 = Machine.halted(state.machine.value0);
-              if (_20) {
-                  var _21 = {};
-                  for (var _22 in state) {
-                      if (state.hasOwnProperty(_22)) {
-                          _21[_22] = state[_22];
-                      };
-                  };
-                  _21.outputs = state.machine.value0.output;
-                  return _21;
-              };
-              if (!_20) {
-                  return startMachine(input)((function () {
-                      var _23 = {};
-                      for (var _24 in state) {
-                          if (state.hasOwnProperty(_24)) {
-                              _23[_24] = state[_24];
+          return resetMachine(input)((function () {
+              if (state.machine instanceof Data_Maybe.Just) {
+                  var _23 = Machine.halted(state.machine.value0);
+                  if (_23) {
+                      var _24 = {};
+                      for (var _25 in state) {
+                          if (state.hasOwnProperty(_25)) {
+                              _24[_25] = state[_25];
                           };
                       };
-                      _23.machine = Prelude.pure(Data_Maybe.applicativeMaybe)(tryEval(state.machine.value0));
-                      return _23;
-                  })());
+                      _24.outputs = state.machine.value0.output;
+                      return _24;
+                  };
+                  if (!_23) {
+                      return startMachine(input)((function () {
+                          var _26 = {};
+                          for (var _27 in state) {
+                              if (state.hasOwnProperty(_27)) {
+                                  _26[_27] = state[_27];
+                              };
+                          };
+                          _26.machine = Prelude.pure(Data_Maybe.applicativeMaybe)(tryEval(state.machine.value0));
+                          return _26;
+                      })());
+                  };
+                  throw new Error("Failed pattern match at SimScreen line 122, column 1 - line 123, column 1: " + [ _23.constructor.name ]);
               };
-              throw new Error("Failed pattern match at SimScreen line 122, column 1 - line 123, column 1: " + [ _20.constructor.name ]);
-          };
-          if (state.machine instanceof Data_Maybe.Nothing) {
-              return startMachine(input)(state);
-          };
-          throw new Error("Failed pattern match at SimScreen line 122, column 1 - line 123, column 1: " + [ state.machine.constructor.name ]);
+              if (state.machine instanceof Data_Maybe.Nothing) {
+                  return startMachine(input)(state);
+              };
+              throw new Error("Failed pattern match at SimScreen line 122, column 1 - line 123, column 1: " + [ state.machine.constructor.name ]);
+          })());
       };
   };
   var oneButton = {
@@ -3154,25 +3177,25 @@ var PS = { };
           return i;
       };
       if (i.mouseClick instanceof Data_Maybe.Just) {
-          var _27 = CanvasUtils.pointInRect(i.mouseClick.value0)(zeroButton);
-          if (_27) {
-              return Data_Lens_Setter.set(function (_37) {
-                  return Input.zeroOne(Data_Profunctor_Strong.strongFn)(Input.zero(Data_Profunctor_Strong.strongFn)(_37));
+          var _30 = CanvasUtils.pointInRect(i.mouseClick.value0)(zeroButton);
+          if (_30) {
+              return Data_Lens_Setter.set(function (_40) {
+                  return Input.zeroOne(Data_Profunctor_Strong.strongFn)(Input.zero(Data_Profunctor_Strong.strongFn)(_40));
               })(true)(i);
           };
-          if (!_27) {
-              var _28 = CanvasUtils.pointInRect(i.mouseClick.value0)(oneButton);
-              if (_28) {
-                  return Data_Lens_Setter.set(function (_38) {
-                      return Input.zeroOne(Data_Profunctor_Strong.strongFn)(Input.one(Data_Profunctor_Strong.strongFn)(_38));
+          if (!_30) {
+              var _31 = CanvasUtils.pointInRect(i.mouseClick.value0)(oneButton);
+              if (_31) {
+                  return Data_Lens_Setter.set(function (_41) {
+                      return Input.zeroOne(Data_Profunctor_Strong.strongFn)(Input.one(Data_Profunctor_Strong.strongFn)(_41));
                   })(true)(i);
               };
-              if (!_28) {
+              if (!_31) {
                   return i;
               };
-              throw new Error("Failed pattern match: " + [ _28.constructor.name ]);
+              throw new Error("Failed pattern match: " + [ _31.constructor.name ]);
           };
-          throw new Error("Failed pattern match at SimScreen line 93, column 1 - line 105, column 1: " + [ _27.constructor.name ]);
+          throw new Error("Failed pattern match at SimScreen line 93, column 1 - line 105, column 1: " + [ _30.constructor.name ]);
       };
       throw new Error("Failed pattern match at SimScreen line 93, column 1 - line 105, column 1: " + [ i.mouseClick.constructor.name ]);
   };
@@ -3243,28 +3266,28 @@ var PS = { };
       return _0.currLine;
   })(function (_1) {
       return function (_2) {
-          var _30 = {};
-          for (var _31 in _1) {
-              if (_1.hasOwnProperty(_31)) {
-                  _30[_31] = _1[_31];
+          var _33 = {};
+          for (var _34 in _1) {
+              if (_1.hasOwnProperty(_34)) {
+                  _33[_34] = _1[_34];
               };
           };
-          _30.currLine = _2;
-          return _30;
+          _33.currLine = _2;
+          return _33;
       };
   });
   var code = Data_Lens_Lens.lens(function (_3) {
       return _3.code;
   })(function (_4) {
       return function (_5) {
-          var _32 = {};
-          for (var _33 in _4) {
-              if (_4.hasOwnProperty(_33)) {
-                  _32[_33] = _4[_33];
+          var _35 = {};
+          for (var _36 in _4) {
+              if (_4.hasOwnProperty(_36)) {
+                  _35[_36] = _4[_36];
               };
           };
-          _32.code = _5;
-          return _32;
+          _35.code = _5;
+          return _35;
       };
   });
   var updateCode = function (input) {
@@ -3286,14 +3309,14 @@ var PS = { };
               };
               throw new Error("Failed pattern match at SimScreen line 114, column 7 - line 115, column 3: " + [ input.zeroOne.zero.constructor.name ]);
           })();
-          var _36 = Data_String.length(line) >= 8;
-          if (_36) {
+          var _39 = Data_String.length(line) >= 8;
+          if (_39) {
               return Data_Lens_Setter.over(code(Data_Profunctor_Strong.strongFn))(Data_List.Cons.create(Data_String.take(8)(line)))(Data_Lens_Setter.set(currLine(Data_Profunctor_Strong.strongFn))(Data_String.drop(8)(line))(state));
           };
-          if (!_36) {
+          if (!_39) {
               return Data_Lens_Setter.set(currLine(Data_Profunctor_Strong.strongFn))(line)(state);
           };
-          throw new Error("Failed pattern match at SimScreen line 112, column 1 - line 113, column 1: " + [ _36.constructor.name ]);
+          throw new Error("Failed pattern match at SimScreen line 112, column 1 - line 113, column 1: " + [ _39.constructor.name ]);
       };
   };
   var update = function (i) {
@@ -3308,6 +3331,7 @@ var PS = { };
   exports["renderOutput"] = renderOutput;
   exports["getPosition"] = getPosition;
   exports["render"] = render;
+  exports["resetMachine"] = resetMachine;
   exports["tryEval"] = tryEval;
   exports["startMachine"] = startMachine;
   exports["updateMachine"] = updateMachine;
