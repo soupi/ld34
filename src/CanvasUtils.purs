@@ -22,6 +22,13 @@ makePoint x y = { x: x, y: y }
 loadImageData :: String -> Aff _ C.CanvasImageSource
 loadImageData src = makeAff (\error success -> C.withImage src success)
 
+pointInRect :: forall r. Point
+            -> { pos :: Point, size :: Point | r }
+            -> Boolean
+pointInRect p obj =
+     (obj.pos.x <= p.x && p.x <= obj.pos.x + obj.size.x)
+  && (obj.pos.y <= p.y && p.y <= obj.pos.y + obj.size.y)
+
 ------------
 -- Lenses
 ------------
