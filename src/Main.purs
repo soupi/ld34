@@ -48,8 +48,10 @@ initialState = do
   comp <- loadImageData "assets/comp2.png"
   pure $
     Screens
-      (VNScreen $ screens comp intro) $
-      mission01 comp
+      (Screens
+        (VNScreen $ screens comp intro)
+        mission01 comp)
+      (VNScreen $ screens comp end_text)
 
 mission01 comp =
   Screens
@@ -58,9 +60,24 @@ mission01 comp =
 
 mission01_text =
   """
-Your first mission is to print the number 5 (00101).
+Your first mission is to make the machine print the number 5.
 
 We are counting on you!
+"""
+
+end_text =
+  """
+You did it! You completed all of our tasks!
+
+That's amazing!
+
+We have no more tasks for you.
+
+therefore, you are fired.
+
+Thank you, and goodbye.
+
+End.
 """
 
 ------------

@@ -51,7 +51,7 @@ scrArr img txts =
 
 intro :: String
 intro =
-  """Welcome to <Company>.
+  """Welcome to CompCompany.
 
 For the past 40 years our scientists and engineers have been working on a top secret project.
 
@@ -61,7 +61,7 @@ We call it 'The Computing Machine'.
 
 You had the fortune to be selected as one of the chosen few to operate The Computing Machine.
 
-At <Company>, we have a lot of challenges waiting to be solved.
+At CompCompany, we have a lot of challenges waiting to be solved.
 
 Fortunately for you, The Computing Machine is really simple to operate, it only has two buttons!
 
