@@ -65,9 +65,9 @@ data Error
   | InputError
 
 instance showError :: Show Error where
-  show StackUnderflow = "StackUnderflow"
-  show UnknownInstruction = "UnknownInstruction"
-  show InputError = "InputError"
+  show StackUnderflow = "Stack Underflow"
+  show UnknownInstruction = "Unknown Instruction"
+  show InputError = "Input Error"
 
 throwErr :: Error -> Either Error _
 throwErr = Left

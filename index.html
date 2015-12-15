@@ -3,10 +3,84 @@
   <head>
     <title></title>
   </head>
-  <body>
+  <body style="font-family: monospace">
     <div style="width: 1024px; height: 800px; margin: auto;">
-      <canvas id="canvas" width=1024 height=768 />
+      <canvas id="canvas" width=1024 height=800 />
     </div>
+    <div>
+      <h3>Controls</h3>
+      <ul>
+        <li>Enter: next / run machine</li>
+        <li>Escape: back / reset machine, close windows</li>
+        <li>0/1: enter 0 or 1 as input</li>
+        <li>I: open inputs window</li>
+        <li>O: open outputs window</li>
+        <li>T: test solution</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Machine Manual</h3>
+      <p>The machine in the game is a very simple stack machine with very few opcodes:</p>
+
+      <table>
+        <tr>
+          <th>Opcode</th>
+          <th>Short</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td>11111111</td>
+          <td>HALT</td>
+          <td>Stops the machines execution. All programs must end with this</td>
+        </tr>
+        <tr>
+          <td>01010101</td>
+          <td>PRINT</td>
+          <td>Prints the top value on the stack</td>
+        </tr>
+        <tr>
+          <td>00000000</td>
+          <td>EMPTY</td>
+          <td>Will push 0 to the top of the stack if the stack is empty or 1 otherwise</td>
+        </tr>
+        <tr>
+          <td>100SNNNN</td>
+          <td>PUSHVAL x</td>
+          <td>Will push the imediate value SNNNN where S is the sign of the value</td>
+        </tr>
+        <tr>
+          <td>00010000</td>
+          <td>PUSHIN</td>
+          <td>Push value from input to the top of the stack</td>
+        </tr>
+        <tr>
+          <td>00110000</td>
+          <td>POP</td>
+          <td>Discard the top-most value on the stack</td>
+        </tr>
+        <tr>
+          <td>00010001</td>
+          <td>SKIP</td>
+          <td>Skip the top-most value on the stack steps</td>
+        </tr>
+        <tr>
+          <td>10010001</td>
+          <td>SKIPIF</td>
+          <td>Skip the top-most value on the stack steps only if the second top-most value on the stack is zero</td>
+        </tr>
+        <tr>
+          <td>00110011</td>
+          <td>COMPARE</td>
+          <td>Will put 0 if the two top-most values on the stack are equals and 1 otherwise</td>
+        </tr>
+        <tr>
+          <td>01001000</td>
+          <td>ADD</td>
+          <td>Will put the sum of the two top-most values on the stack at the top of the stack</td>
+        </tr>
+      </table>
+    </div>
+
     <script src="app.js"></script>
   </body>
 </html>
