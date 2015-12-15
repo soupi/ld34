@@ -49,8 +49,10 @@ initialState = do
   pure $
     Screens
       (Screens
-        (VNScreen $ screens comp intro)
-        (mission01 comp))
+        (VNScreen $ screens comp intro) $
+        Screens
+          (mission01 comp)
+          (mission02 comp))
       (VNScreen $ screens comp end_text)
 
 mission01 comp =
@@ -65,6 +67,27 @@ Your first mission is to make the machine print the number 5.
 We are counting on you!
 """
 
+
+mission02 comp =
+  Screens
+     (VNScreen $ screens comp mission02_text)
+     (Simulation $ Sim.mkSimScreen (zipper {input: Cons 4 $ Cons 5 Nil, output: Cons 9 Nil} Nil $
+                                      Cons {input: Cons 3 $ Cons 3 Nil, output: Cons 6 Nil} $
+                                      Cons {input: Cons (-3) $ Cons 3 Nil, output: Cons 0 Nil} Nil) comp)
+
+mission02_text =
+  """
+Nice, you have completed the first mission!
+
+Though maybe it's not that impressive, there are only two buttons, how hard can it be?
+
+Next, we need a machine that can add two numbers together.
+
+Build one for us, we'll give you two numbers, you give us their sum.
+"""
+
+
+
 end_text =
   """
 You did it! You completed all of our tasks!
@@ -77,8 +100,9 @@ Therefore, you are fired.
 
 Thank you, and goodbye.
 
-End.
+The End.
 """
+
 
 ------------
 -- Update
