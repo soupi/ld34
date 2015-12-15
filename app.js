@@ -203,7 +203,6 @@ var PS = { };
   var eqString = new Eq($foreign.refEq);
   var eqInt = new Eq($foreign.refEq);
   var eqChar = new Eq($foreign.refEq);
-  var eqBoolean = new Eq($foreign.refEq);
   var eq = function (dict) {
       return dict.eq;
   };
@@ -226,9 +225,6 @@ var PS = { };
   };
   var conj = function (dict) {
       return dict.conj;
-  };
-  var $amp$amp = function (__dict_BooleanAlgebra_13) {
-      return conj(__dict_BooleanAlgebra_13);
   };
   var compose = function (dict) {
       return dict.compose;
@@ -309,7 +305,6 @@ var PS = { };
   exports["Semigroupoid"] = Semigroupoid;
   exports["show"] = show;
   exports["||"] = $bar$bar;
-  exports["&&"] = $amp$amp;
   exports["not"] = not;
   exports["disj"] = disj;
   exports["conj"] = conj;
@@ -347,7 +342,6 @@ var PS = { };
   exports["functorArray"] = functorArray;
   exports["semiringInt"] = semiringInt;
   exports["moduloSemiringInt"] = moduloSemiringInt;
-  exports["eqBoolean"] = eqBoolean;
   exports["eqInt"] = eqInt;
   exports["eqChar"] = eqChar;
   exports["eqString"] = eqString;
@@ -2022,23 +2016,6 @@ var PS = { };
       };
     };
 
-  exports.dropRepeatsP =
-  function dropRepeatsP(eq) {
-    return function(constant) {
-      return function(sig) {
-        var val = sig.get();
-        var out = constant(val);
-        sig.subscribe(function(newval) {
-          if (!eq["eq"](val)(newval)) {
-            val = newval;
-            out.set(val);
-          }
-        });
-        return out;
-      };
-    };
-  };  
-
   exports.runSignal =
     function runSignal(sig) {
       return function() {
@@ -2061,15 +2038,11 @@ var PS = { };
   var sampleOn = $foreign.sampleOnP($foreign.constant);
   var mapSig = $foreign.mapSigP($foreign.constant);
   var functorSignal = new Prelude.Functor(mapSig);
-  var foldp = $foreign.foldpP($foreign.constant);                     
-  var dropRepeats = function (__dict_Eq_5) {
-      return $foreign.dropRepeatsP(__dict_Eq_5)($foreign.constant);
-  };
+  var foldp = $foreign.foldpP($foreign.constant);
   var applySig = $foreign.applySigP($foreign.constant);
   var applySignal = new Prelude.Apply(function () {
       return functorSignal;
   }, applySig);
-  exports["dropRepeats"] = dropRepeats;
   exports["sampleOn"] = sampleOn;
   exports["foldp"] = foldp;
   exports["functorSignal"] = functorSignal;
@@ -2105,34 +2078,6 @@ var PS = { };
       return out;
     };
   };
-
-  exports.sinceP = function sinceP(constant) {
-    return function(t) {
-      return function(sig) {
-        var out = constant(false);
-        var first = true;
-        var timer = undefined;
-        var tick = function() {
-          out.set(false);
-          timer = undefined;
-        };
-        sig.subscribe(function() {
-          if (first) {
-            first = false;
-            return;
-          }
-          if (timer === undefined) {
-            out.set(true);
-            timer = setTimeout(tick, t);
-          } else {
-            clearTimeout(timer);
-            timer = setTimeout(tick, t);
-          }
-        });
-        return out;
-      }
-    };
-  };
  
 })(PS["Signal.Time"] = PS["Signal.Time"] || {});
 (function(exports) {
@@ -2141,14 +2086,12 @@ var PS = { };
   var $foreign = PS["Signal.Time"];
   var Control_Monad_Eff = PS["Control.Monad.Eff"];
   var Control_Timer = PS["Control.Timer"];
-  var Signal = PS["Signal"];     
-  var since = $foreign.sinceP(Signal.constant);
+  var Signal = PS["Signal"];                   
   var second = 1000.0;
   var millisecond = 1.0;
   var every = $foreign.everyP(Signal.constant);
   exports["second"] = second;
   exports["millisecond"] = millisecond;
-  exports["since"] = since;
   exports["every"] = every;
   exports["now"] = $foreign.now;;
  
@@ -2352,6 +2295,7 @@ var PS = { };
   });
   var upKeyCode = 38;
   var tKeyCode = 84;
+  var tKey = Signal_DOM.keyPressed(tKeyCode);
   var rightKeyCode = 39;
   var one$prime = function __do() {
       var _29 = Signal_DOM.keyPressed(49)();
@@ -2372,10 +2316,6 @@ var PS = { };
           return _40;
       };
   });
-  var once = function (sig) {
-      return Prelude["<*>"](Signal.applySignal)(Prelude["<$>"](Signal.functorSignal)(Prelude["&&"](Prelude.booleanAlgebraBoolean))(sig))(Signal_Time.since(Signal_Time.millisecond * 8.0)(Signal.dropRepeats(Prelude.eqBoolean)(sig)));
-  };
-  var tKey = Prelude["<$>"](Control_Monad_Eff.functorEff)(once)(Signal_DOM.keyPressed(tKeyCode));
   var oKeyCode = 79;
   var mouseClick = function __do() {
       var _31 = Signal_DOM.mousePos();
@@ -2393,14 +2333,14 @@ var PS = { };
               };
               throw new Error("Failed pattern match at Input line 120, column 1 - line 128, column 1: " + [ d.constructor.name ]);
           };
-      })(_31))(once(_30));
+      })(_31))(_30);
   };
   var leftKeyCode = 37;
   var iKeyCode = 73;
   var io = function __do() {
       var _23 = Signal_DOM.keyPressed(iKeyCode)();
       var _22 = Signal_DOM.keyPressed(oKeyCode)();
-      return Prelude["<*>"](Signal.applySignal)(Prelude["<$>"](Signal.functorSignal)(Utils.Tuple.create)(once(_23)))(once(_22));
+      return Prelude["<*>"](Signal.applySignal)(Prelude["<$>"](Signal.functorSignal)(Utils.Tuple.create)(_23))(_22);
   };
   var escKeyCode = 27;
   var enterKeyCode = 13;
@@ -2456,7 +2396,7 @@ var PS = { };
           return function (b) {
               return asNum(f) - asNum(b);
           };
-      })(once(_25)))(once(_24));
+      })(_25))(_24);
   };
   var arrows = function __do() {
       var _21 = Signal_DOM.keyPressed(leftKeyCode)();
@@ -2496,7 +2436,6 @@ var PS = { };
   exports["one"] = one;
   exports["zero"] = zero;
   exports["zeroOne"] = zeroOne;
-  exports["once"] = once;
   exports["mouseClick"] = mouseClick;
   exports["asNum"] = asNum;
   exports["screenDirection"] = screenDirection;
@@ -4535,7 +4474,7 @@ var PS = { };
               throw new Error("Failed pattern match: " + [ _28.constructor.name ]);
           };
           if (_6 instanceof Simulation) {
-              var _31 = input.zeroOne.zero || (input.zeroOne.one || input.screenDir < 0.0);
+              var _31 = input.zeroOne.zero || (input.zeroOne.one || (input.screenDir < 0.0 || (input.screenDir > 0.0 || (Utils.fst(input.io) || (Utils.snd(input.io) || (input.runTests || Data_Maybe.isJust(input.mouseClick)))))));
               if (_31) {
                   return Wait.create(input.time)(Simulation.create(SimScreen.update(input)(_6.value0)));
               };
@@ -4545,19 +4484,28 @@ var PS = { };
               throw new Error("Failed pattern match: " + [ _31.constructor.name ]);
           };
           if (_6 instanceof VNScreen) {
-              var _33 = input.screenDir > 0.0 || Data_Maybe.isJust(input.mouseClick);
+              var _33 = input.zeroOne.zero || (input.zeroOne.one || (input.screenDir < 0.0 || (input.screenDir > 0.0 || (Utils.fst(input.io) || (Utils.snd(input.io) || (input.runTests || Data_Maybe.isJust(input.mouseClick)))))));
               if (_33) {
-                  return VNScreen.create(Utils.snd(Zipper.next(_6.value0)));
+                  return Wait.create(input.time)((function () {
+                      var _34 = input.screenDir > 0.0 || Data_Maybe.isJust(input.mouseClick);
+                      if (_34) {
+                          return VNScreen.create(Utils.snd(Zipper.next(_6.value0)));
+                      };
+                      if (!_34) {
+                          var _35 = input.screenDir < 0.0;
+                          if (_35) {
+                              return VNScreen.create(Utils.snd(Zipper.back(_6.value0)));
+                          };
+                          if (!_35) {
+                              return _6;
+                          };
+                          throw new Error("Failed pattern match: " + [ _35.constructor.name ]);
+                      };
+                      throw new Error("Failed pattern match: " + [ _34.constructor.name ]);
+                  })());
               };
               if (!_33) {
-                  var _34 = input.screenDir < 0.0;
-                  if (_34) {
-                      return VNScreen.create(Utils.snd(Zipper.back(_6.value0)));
-                  };
-                  if (!_34) {
-                      return _6;
-                  };
-                  throw new Error("Failed pattern match: " + [ _34.constructor.name ]);
+                  return _6;
               };
               throw new Error("Failed pattern match: " + [ _33.constructor.name ]);
           };
