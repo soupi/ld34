@@ -1775,7 +1775,12 @@ var PS = { };
               throw new Error("Failed pattern match: " + [ o.constructor.name, b.constructor.name, _65.constructor.name ]);
           };
       };
-  });   
+  });
+  var length = Data_Foldable.foldl(foldableList)(function (acc) {
+      return function (_8) {
+          return acc + 1 | 0;
+      };
+  })(0);
   var traversableList = new Data_Traversable.Traversable(function () {
       return foldableList;
   }, function () {
@@ -1844,6 +1849,7 @@ var PS = { };
   exports["uncons"] = uncons;
   exports["tail"] = tail;
   exports["head"] = head;
+  exports["length"] = length;
   exports["null"] = $$null;
   exports["range"] = range;
   exports["singleton"] = singleton;
@@ -2691,104 +2697,104 @@ var PS = { };
       return InputError;
   })();
   var throwErr = Data_Either.Left.create;
-  var takeTwo = function (_25) {
-      if (_25 instanceof Data_List.Cons && _25.value1 instanceof Data_List.Cons) {
-          return Data_Maybe.Just.create(new Utils.Tuple(_25.value0, _25.value1.value0));
+  var takeTwo = function (_26) {
+      if (_26 instanceof Data_List.Cons && _26.value1 instanceof Data_List.Cons) {
+          return Data_Maybe.Just.create(new Utils.Tuple(_26.value0, _26.value1.value0));
       };
       return Data_Maybe.Nothing.value;
   };
   var strBinToInt = function (str) {
-      return Data_Maybe.fromMaybe(new Data_Either.Left(UnknownInstruction.value))(Prelude.map(Data_Maybe.functorMaybe)(Data_Either.Right.create)(Prelude.bind(Data_Maybe.bindMaybe)(Data_String.uncons(str))(function (_21) {
-          return Prelude.bind(Data_Maybe.bindMaybe)(Data_String.uncons(_21.tail))(function (_20) {
-              return Prelude.bind(Data_Maybe.bindMaybe)(Data_String.uncons(_20.tail))(function (_19) {
-                  return Prelude.bind(Data_Maybe.bindMaybe)(Data_String.uncons(_19.tail))(function (_18) {
-                      return Prelude.bind(Data_Maybe.bindMaybe)(Data_String.uncons(_18.tail))(function (_17) {
+      return Data_Maybe.fromMaybe(new Data_Either.Left(UnknownInstruction.value))(Prelude.map(Data_Maybe.functorMaybe)(Data_Either.Right.create)(Prelude.bind(Data_Maybe.bindMaybe)(Data_String.uncons(str))(function (_22) {
+          return Prelude.bind(Data_Maybe.bindMaybe)(Data_String.uncons(_22.tail))(function (_21) {
+              return Prelude.bind(Data_Maybe.bindMaybe)(Data_String.uncons(_21.tail))(function (_20) {
+                  return Prelude.bind(Data_Maybe.bindMaybe)(Data_String.uncons(_20.tail))(function (_19) {
+                      return Prelude.bind(Data_Maybe.bindMaybe)(Data_String.uncons(_19.tail))(function (_18) {
                           return Prelude.bind(Data_Maybe.bindMaybe)((function () {
-                              var _37 = Prelude["=="](Prelude.eqChar)(_21.head)("0");
-                              if (_37) {
+                              var _38 = Prelude["=="](Prelude.eqChar)(_22.head)("0");
+                              if (_38) {
                                   return new Data_Maybe.Just(1);
                               };
-                              if (!_37) {
-                                  var _38 = Prelude["=="](Prelude.eqChar)(_21.head)("1");
-                                  if (_38) {
+                              if (!_38) {
+                                  var _39 = Prelude["=="](Prelude.eqChar)(_22.head)("1");
+                                  if (_39) {
                                       return new Data_Maybe.Just(-1);
                                   };
-                                  if (!_38) {
+                                  if (!_39) {
                                       return Data_Maybe.Nothing.value;
                                   };
-                                  throw new Error("Failed pattern match: " + [ _38.constructor.name ]);
+                                  throw new Error("Failed pattern match: " + [ _39.constructor.name ]);
                               };
-                              throw new Error("Failed pattern match at Machine line 201, column 1 - line 202, column 1: " + [ _37.constructor.name ]);
-                          })())(function (_16) {
+                              throw new Error("Failed pattern match at Machine line 201, column 1 - line 202, column 1: " + [ _38.constructor.name ]);
+                          })())(function (_17) {
                               return Prelude.bind(Data_Maybe.bindMaybe)((function () {
-                                  var _40 = Prelude["=="](Prelude.eqChar)(_20.head)("0");
-                                  if (_40) {
+                                  var _41 = Prelude["=="](Prelude.eqChar)(_21.head)("0");
+                                  if (_41) {
                                       return new Data_Maybe.Just(0);
                                   };
-                                  if (!_40) {
-                                      var _41 = Prelude["=="](Prelude.eqChar)(_20.head)("1");
-                                      if (_41) {
+                                  if (!_41) {
+                                      var _42 = Prelude["=="](Prelude.eqChar)(_21.head)("1");
+                                      if (_42) {
                                           return new Data_Maybe.Just(1);
                                       };
-                                      if (!_41) {
+                                      if (!_42) {
                                           return Data_Maybe.Nothing.value;
                                       };
-                                      throw new Error("Failed pattern match: " + [ _41.constructor.name ]);
+                                      throw new Error("Failed pattern match: " + [ _42.constructor.name ]);
                                   };
-                                  throw new Error("Failed pattern match at Machine line 201, column 1 - line 202, column 1: " + [ _40.constructor.name ]);
-                              })())(function (_15) {
+                                  throw new Error("Failed pattern match at Machine line 201, column 1 - line 202, column 1: " + [ _41.constructor.name ]);
+                              })())(function (_16) {
                                   return Prelude.bind(Data_Maybe.bindMaybe)((function () {
-                                      var _43 = Prelude["=="](Prelude.eqChar)(_19.head)("0");
-                                      if (_43) {
+                                      var _44 = Prelude["=="](Prelude.eqChar)(_20.head)("0");
+                                      if (_44) {
                                           return new Data_Maybe.Just(0);
                                       };
-                                      if (!_43) {
-                                          var _44 = Prelude["=="](Prelude.eqChar)(_19.head)("1");
-                                          if (_44) {
+                                      if (!_44) {
+                                          var _45 = Prelude["=="](Prelude.eqChar)(_20.head)("1");
+                                          if (_45) {
                                               return new Data_Maybe.Just(1);
                                           };
-                                          if (!_44) {
+                                          if (!_45) {
                                               return Data_Maybe.Nothing.value;
                                           };
-                                          throw new Error("Failed pattern match: " + [ _44.constructor.name ]);
+                                          throw new Error("Failed pattern match: " + [ _45.constructor.name ]);
                                       };
-                                      throw new Error("Failed pattern match at Machine line 201, column 1 - line 202, column 1: " + [ _43.constructor.name ]);
-                                  })())(function (_14) {
+                                      throw new Error("Failed pattern match at Machine line 201, column 1 - line 202, column 1: " + [ _44.constructor.name ]);
+                                  })())(function (_15) {
                                       return Prelude.bind(Data_Maybe.bindMaybe)((function () {
-                                          var _46 = Prelude["=="](Prelude.eqChar)(_18.head)("0");
-                                          if (_46) {
+                                          var _47 = Prelude["=="](Prelude.eqChar)(_19.head)("0");
+                                          if (_47) {
                                               return new Data_Maybe.Just(0);
                                           };
-                                          if (!_46) {
-                                              var _47 = Prelude["=="](Prelude.eqChar)(_18.head)("1");
-                                              if (_47) {
+                                          if (!_47) {
+                                              var _48 = Prelude["=="](Prelude.eqChar)(_19.head)("1");
+                                              if (_48) {
                                                   return new Data_Maybe.Just(1);
                                               };
-                                              if (!_47) {
+                                              if (!_48) {
                                                   return Data_Maybe.Nothing.value;
                                               };
-                                              throw new Error("Failed pattern match: " + [ _47.constructor.name ]);
+                                              throw new Error("Failed pattern match: " + [ _48.constructor.name ]);
                                           };
-                                          throw new Error("Failed pattern match at Machine line 201, column 1 - line 202, column 1: " + [ _46.constructor.name ]);
-                                      })())(function (_13) {
+                                          throw new Error("Failed pattern match at Machine line 201, column 1 - line 202, column 1: " + [ _47.constructor.name ]);
+                                      })())(function (_14) {
                                           return Prelude.bind(Data_Maybe.bindMaybe)((function () {
-                                              var _49 = Prelude["=="](Prelude.eqChar)(_17.head)("0");
-                                              if (_49) {
+                                              var _50 = Prelude["=="](Prelude.eqChar)(_18.head)("0");
+                                              if (_50) {
                                                   return new Data_Maybe.Just(0);
                                               };
-                                              if (!_49) {
-                                                  var _50 = Prelude["=="](Prelude.eqChar)(_17.head)("1");
-                                                  if (_50) {
+                                              if (!_50) {
+                                                  var _51 = Prelude["=="](Prelude.eqChar)(_18.head)("1");
+                                                  if (_51) {
                                                       return new Data_Maybe.Just(1);
                                                   };
-                                                  if (!_50) {
+                                                  if (!_51) {
                                                       return Data_Maybe.Nothing.value;
                                                   };
-                                                  throw new Error("Failed pattern match: " + [ _50.constructor.name ]);
+                                                  throw new Error("Failed pattern match: " + [ _51.constructor.name ]);
                                               };
-                                              throw new Error("Failed pattern match at Machine line 201, column 1 - line 202, column 1: " + [ _49.constructor.name ]);
-                                          })())(function (_12) {
-                                              return Prelude.pure(Data_Maybe.applicativeMaybe)(((((_12 * 1 | 0) + (_13 * 2 | 0) | 0) + (_14 * 4 | 0) | 0) + (_15 * 8 | 0) | 0) * _16 | 0);
+                                              throw new Error("Failed pattern match at Machine line 201, column 1 - line 202, column 1: " + [ _50.constructor.name ]);
+                                          })())(function (_13) {
+                                              return Prelude.pure(Data_Maybe.applicativeMaybe)(((((_13 * 1 | 0) + (_14 * 2 | 0) | 0) + (_15 * 4 | 0) | 0) + (_16 * 8 | 0) | 0) * _17 | 0);
                                           });
                                       });
                                   });
@@ -2801,38 +2807,38 @@ var PS = { };
       })));
   };
   var translate = function (txt) {
-      var _62 = new Utils.Tuple(Data_String.take(3)(txt), Data_String.drop(3)(txt));
-      if (_62.value0 === "111" && _62.value1 === "11111") {
+      var _63 = new Utils.Tuple(Data_String.take(3)(txt), Data_String.drop(3)(txt));
+      if (_63.value0 === "111" && _63.value1 === "11111") {
           return Prelude.pure(Data_Either.applicativeEither)(HALT.value);
       };
-      if (_62.value0 === "010" && _62.value1 === "10101") {
+      if (_63.value0 === "010" && _63.value1 === "10101") {
           return Prelude.pure(Data_Either.applicativeEither)(PRINT.value);
       };
-      if (_62.value0 === "000" && _62.value1 === "00000") {
+      if (_63.value0 === "000" && _63.value1 === "00000") {
           return Prelude.pure(Data_Either.applicativeEither)(EMPTY.value);
       };
-      if (_62.value0 === "100") {
-          return Prelude["<$>"](Data_Either.functorEither)(LOADVAL.create)(strBinToInt(_62.value1));
+      if (_63.value0 === "100") {
+          return Prelude["<$>"](Data_Either.functorEither)(LOADVAL.create)(strBinToInt(_63.value1));
       };
-      if (_62.value0 === "000" && _62.value1 === "10000") {
+      if (_63.value0 === "000" && _63.value1 === "10000") {
           return Prelude.pure(Data_Either.applicativeEither)(LOADIN.value);
       };
-      if (_62.value0 === "001" && _62.value1 === "10000") {
+      if (_63.value0 === "001" && _63.value1 === "10000") {
           return Prelude.pure(Data_Either.applicativeEither)(POP.value);
       };
-      if (_62.value0 === "000" && _62.value1 === "10001") {
+      if (_63.value0 === "000" && _63.value1 === "10001") {
           return Prelude.pure(Data_Either.applicativeEither)(JUMP.value);
       };
-      if (_62.value0 === "000" && _62.value1 === "10101") {
+      if (_63.value0 === "000" && _63.value1 === "10101") {
           return Prelude.pure(Data_Either.applicativeEither)(JUMPIF.value);
       };
-      if (_62.value0 === "001" && _62.value1 === "10011") {
+      if (_63.value0 === "001" && _63.value1 === "10011") {
           return Prelude.pure(Data_Either.applicativeEither)(COMPARE.value);
       };
-      if (_62.value0 === "010" && _62.value1 === "01000") {
+      if (_63.value0 === "010" && _63.value1 === "01000") {
           return Prelude.pure(Data_Either.applicativeEither)(ADD.value);
       };
-      if (_62.value0 === "110" && _62.value1 === "01100") {
+      if (_63.value0 === "110" && _63.value1 === "01100") {
           return Prelude.pure(Data_Either.applicativeEither)(DUP.value);
       };
       return throwErr(UnknownInstruction.value);
@@ -2841,40 +2847,40 @@ var PS = { };
       return _3.stack;
   })(function (_4) {
       return function (_5) {
-          var _85 = {};
-          for (var _86 in _4) {
-              if (_4.hasOwnProperty(_86)) {
-                  _85[_86] = _4[_86];
+          var _86 = {};
+          for (var _87 in _4) {
+              if (_4.hasOwnProperty(_87)) {
+                  _86[_87] = _4[_87];
               };
           };
-          _85.stack = _5;
-          return _85;
+          _86.stack = _5;
+          return _86;
       };
   });
-  var showError = new Prelude.Show(function (_26) {
-      if (_26 instanceof StackUnderflow) {
+  var showError = new Prelude.Show(function (_27) {
+      if (_27 instanceof StackUnderflow) {
           return "Stack Underflow";
       };
-      if (_26 instanceof UnknownInstruction) {
+      if (_27 instanceof UnknownInstruction) {
           return "Unknown Instruction";
       };
-      if (_26 instanceof InputError) {
+      if (_27 instanceof InputError) {
           return "Input Error";
       };
-      throw new Error("Failed pattern match at Machine line 71, column 1 - line 76, column 1: " + [ _26.constructor.name ]);
+      throw new Error("Failed pattern match at Machine line 71, column 1 - line 76, column 1: " + [ _27.constructor.name ]);
   });
   var output = Data_Lens_Lens.lens(function (_9) {
       return _9.output;
   })(function (_10) {
       return function (_11) {
-          var _88 = {};
-          for (var _89 in _10) {
-              if (_10.hasOwnProperty(_89)) {
-                  _88[_89] = _10[_89];
+          var _89 = {};
+          for (var _90 in _10) {
+              if (_10.hasOwnProperty(_90)) {
+                  _89[_90] = _10[_90];
               };
           };
-          _88.output = _11;
-          return _88;
+          _89.output = _11;
+          return _89;
       };
   });
   var moveBy = function (__copy_n) {
@@ -2905,217 +2911,213 @@ var PS = { };
   };
   var mkMachine = function (inst) {
       return function (input_1) {
-          var _92 = Data_List.uncons(inst);
-          if (_92 instanceof Data_Maybe.Nothing) {
+          var _93 = Data_List.uncons(inst);
+          if (_93 instanceof Data_Maybe.Nothing) {
               return Data_Maybe.Nothing.value;
           };
-          if (_92 instanceof Data_Maybe.Just) {
+          if (_93 instanceof Data_Maybe.Just) {
               return new Data_Maybe.Just({
-                  code: Zipper.zipper(_92.value0.head)(Data_List.Nil.value)(_92.value0.tail), 
+                  code: Zipper.zipper(_93.value0.head)(Data_List.Nil.value)(_93.value0.tail), 
                   stack: Data_List.Nil.value, 
                   input: input_1, 
                   output: Data_List.Nil.value
               });
           };
-          throw new Error("Failed pattern match at Machine line 24, column 1 - line 25, column 1: " + [ _92.constructor.name ]);
+          throw new Error("Failed pattern match at Machine line 24, column 1 - line 25, column 1: " + [ _93.constructor.name ]);
       };
   };
   var input = Data_Lens_Lens.lens(function (_6) {
       return _6.input;
   })(function (_7) {
       return function (_8) {
-          var _96 = {};
-          for (var _97 in _7) {
-              if (_7.hasOwnProperty(_97)) {
-                  _96[_97] = _7[_97];
+          var _97 = {};
+          for (var _98 in _7) {
+              if (_7.hasOwnProperty(_98)) {
+                  _97[_98] = _7[_98];
               };
           };
-          _96.input = _8;
-          return _96;
+          _97.input = _8;
+          return _97;
       };
   });
   var code = Data_Lens_Lens.lens(function (_0) {
       return _0.code;
   })(function (_1) {
       return function (_2) {
-          var _98 = {};
-          for (var _99 in _1) {
-              if (_1.hasOwnProperty(_99)) {
-                  _98[_99] = _1[_99];
+          var _99 = {};
+          for (var _100 in _1) {
+              if (_1.hasOwnProperty(_100)) {
+                  _99[_100] = _1[_100];
               };
           };
-          _98.code = _2;
-          return _98;
+          _99.code = _2;
+          return _99;
       };
   });
   var movePC = function (machine) {
-      var _100 = Zipper.current(machine.code);
-      if (_100 instanceof HALT) {
+      var _101 = Zipper.current(machine.code);
+      if (_101 instanceof HALT) {
           return Prelude.pure(Data_Either.applicativeEither)(machine);
       };
-      if (_100 instanceof PRINT) {
+      if (_101 instanceof PRINT) {
           return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(code(Data_Profunctor_Strong.strongFn))(moveBy(1))(machine));
       };
-      if (_100 instanceof LOADVAL) {
+      if (_101 instanceof LOADVAL) {
           return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(code(Data_Profunctor_Strong.strongFn))(moveBy(1))(machine));
       };
-      if (_100 instanceof LOADIN) {
+      if (_101 instanceof LOADIN) {
           return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(code(Data_Profunctor_Strong.strongFn))(moveBy(1))(machine));
       };
-      if (_100 instanceof POP) {
+      if (_101 instanceof POP) {
           return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(code(Data_Profunctor_Strong.strongFn))(moveBy(1))(machine));
       };
-      if (_100 instanceof JUMP) {
+      if (_101 instanceof JUMP) {
           return Data_Maybe.maybe(throwErr(StackUnderflow.value))(function (x) {
-              return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(stack(Data_Profunctor_Strong.strongFn))(function (_123) {
-                  return Data_Maybe_Unsafe.fromJust(Data_List.tail(_123));
+              return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(stack(Data_Profunctor_Strong.strongFn))(function (_127) {
+                  return Data_Maybe_Unsafe.fromJust(Data_List.tail(_127));
               })(Data_Lens_Setter.over(code(Data_Profunctor_Strong.strongFn))(moveBy(x))(machine)));
           })(Data_List.head(machine.stack));
       };
-      if (_100 instanceof COMPARE) {
+      if (_101 instanceof COMPARE) {
           return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(code(Data_Profunctor_Strong.strongFn))(moveBy(1))(machine));
       };
-      if (_100 instanceof JUMPIF) {
-          return Data_Maybe.maybe(throwErr(StackUnderflow.value))(function (_24) {
-              return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(stack(Data_Profunctor_Strong.strongFn))(function (_124) {
-                  return Data_Maybe_Unsafe.fromJust(Data_List.tail(_124));
+      if (_101 instanceof JUMPIF) {
+          return Data_Maybe.maybe(throwErr(StackUnderflow.value))(function (_25) {
+              return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(stack(Data_Profunctor_Strong.strongFn))(function (_128) {
+                  return Data_Maybe_Unsafe.fromJust(Data_List.tail(_128));
               })(Data_Lens_Setter.over(code(Data_Profunctor_Strong.strongFn))((function () {
-                  var _103 = _24.value1 !== 0;
-                  if (_103) {
-                      return moveBy(_24.value0);
+                  var _104 = _25.value1 !== 0;
+                  if (_104) {
+                      return moveBy(_25.value0);
                   };
-                  if (!_103) {
+                  if (!_104) {
                       return moveBy(1);
                   };
-                  throw new Error("Failed pattern match at Machine line 117, column 1 - line 118, column 1: " + [ _103.constructor.name ]);
+                  throw new Error("Failed pattern match at Machine line 117, column 1 - line 118, column 1: " + [ _104.constructor.name ]);
               })())(machine)));
           })(takeTwo(machine.stack));
       };
-      if (_100 instanceof ADD) {
+      if (_101 instanceof ADD) {
           return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(code(Data_Profunctor_Strong.strongFn))(moveBy(1))(machine));
       };
-      if (_100 instanceof EMPTY) {
+      if (_101 instanceof EMPTY) {
           return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(code(Data_Profunctor_Strong.strongFn))(moveBy(1))(machine));
       };
-      if (_100 instanceof DUP) {
+      if (_101 instanceof DUP) {
           return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(code(Data_Profunctor_Strong.strongFn))(moveBy(1))(machine));
       };
-      throw new Error("Failed pattern match at Machine line 117, column 1 - line 118, column 1: " + [ _100.constructor.name ]);
+      throw new Error("Failed pattern match at Machine line 117, column 1 - line 118, column 1: " + [ _101.constructor.name ]);
   };
   var $$eval = function (machine) {
       return Control_Bind["=<<"](Data_Either.bindEither)(movePC)((function () {
-          var _106 = Zipper.current(machine.code);
-          if (_106 instanceof HALT) {
+          var _107 = Zipper.current(machine.code);
+          if (_107 instanceof HALT) {
               return Prelude.pure(Data_Either.applicativeEither)(machine);
           };
-          if (_106 instanceof JUMP) {
+          if (_107 instanceof JUMP) {
               return Prelude.pure(Data_Either.applicativeEither)(machine);
           };
-          if (_106 instanceof JUMPIF) {
+          if (_107 instanceof JUMPIF) {
               return Prelude.pure(Data_Either.applicativeEither)(machine);
           };
-          if (_106 instanceof DUP) {
+          if (_107 instanceof DUP) {
               return Data_Maybe.maybe(throwErr(StackUnderflow.value))(function (x) {
                   return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(stack(Data_Profunctor_Strong.strongFn))(Data_List.Cons.create(x))(machine));
               })(Data_List.head(machine.stack));
           };
-          if (_106 instanceof PRINT) {
+          if (_107 instanceof PRINT) {
               return Data_Maybe.maybe(throwErr(StackUnderflow.value))(function (x) {
                   return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(output(Data_Profunctor_Strong.strongFn))(Data_List.Cons.create(x))(machine));
               })(Data_List.head(machine.stack));
           };
-          if (_106 instanceof EMPTY) {
+          if (_107 instanceof EMPTY) {
               return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(stack(Data_Profunctor_Strong.strongFn))(function (s) {
-                  var _107 = Data_List["null"](s);
-                  if (_107) {
+                  var _108 = Data_List["null"](s);
+                  if (_108) {
                       return new Data_List.Cons(0, s);
                   };
-                  if (!_107) {
+                  if (!_108) {
                       return new Data_List.Cons(1, s);
                   };
-                  throw new Error("Failed pattern match at Machine line 79, column 1 - line 80, column 1: " + [ _107.constructor.name ]);
+                  throw new Error("Failed pattern match at Machine line 79, column 1 - line 80, column 1: " + [ _108.constructor.name ]);
               })(machine));
           };
-          if (_106 instanceof LOADVAL) {
-              return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(stack(Data_Profunctor_Strong.strongFn))(Data_List.Cons.create(_106.value0))(machine));
+          if (_107 instanceof LOADVAL) {
+              return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(stack(Data_Profunctor_Strong.strongFn))(Data_List.Cons.create(_107.value0))(machine));
           };
-          if (_106 instanceof LOADIN) {
-              return Control_Bind["=<<"](Data_Either.bindEither)(function (machine_1) {
-                  return Data_Maybe.maybe(throwErr(InputError.value))(function (i) {
-                      return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.set(input(Data_Profunctor_Strong.strongFn))(i)(machine_1));
-                  })(Data_List.tail(machine_1.input));
-              })(Data_Maybe.maybe(throwErr(InputError.value))(function (x) {
-                  return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(stack(Data_Profunctor_Strong.strongFn))(Data_List.Cons.create(x))(machine));
-              })(Data_List.head(machine.input)));
+          if (_107 instanceof LOADIN) {
+              return Data_Maybe.fromMaybe(throwErr(InputError.value))(Prelude.bind(Data_Maybe.bindMaybe)(Data_List.uncons(machine.input))(function (_12) {
+                  return Prelude.pure(Data_Maybe.applicativeMaybe)(Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.set(input(Data_Profunctor_Strong.strongFn))(_12.tail)(Data_Lens_Setter.over(stack(Data_Profunctor_Strong.strongFn))(Data_List.Cons.create(_12.head))(machine))));
+              }));
           };
-          if (_106 instanceof POP) {
+          if (_107 instanceof POP) {
               return Data_Maybe.maybe(throwErr(StackUnderflow.value))(function (s) {
                   return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.set(stack(Data_Profunctor_Strong.strongFn))(s)(machine));
               })(Data_List.tail(machine.stack));
           };
-          if (_106 instanceof ADD) {
-              return Data_Maybe.maybe(throwErr(StackUnderflow.value))(function (_22) {
-                  return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(stack(Data_Profunctor_Strong.strongFn))(function (_125) {
+          if (_107 instanceof ADD) {
+              return Data_Maybe.maybe(throwErr(StackUnderflow.value))(function (_23) {
+                  return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(stack(Data_Profunctor_Strong.strongFn))(function (_129) {
                       return Data_List.Cons.create((function () {
-                          var _110 = (_22.value0 + _22.value1 | 0) > 15;
-                          if (_110) {
-                              return (_22.value0 + _22.value1 | 0) - 15;
+                          var _114 = (_23.value0 + _23.value1 | 0) > 15;
+                          if (_114) {
+                              return (_23.value0 + _23.value1 | 0) - 15;
                           };
-                          if (!_110) {
-                              var _111 = (_22.value0 + _22.value1 | 0) < -15;
-                              if (_111) {
-                                  return 15 - (_22.value0 + _22.value1 | 0);
+                          if (!_114) {
+                              var _115 = (_23.value0 + _23.value1 | 0) < -15;
+                              if (_115) {
+                                  return 15 - (_23.value0 + _23.value1 | 0);
                               };
-                              if (!_111) {
-                                  return _22.value0 + _22.value1 | 0;
+                              if (!_115) {
+                                  return _23.value0 + _23.value1 | 0;
                               };
-                              throw new Error("Failed pattern match: " + [ _111.constructor.name ]);
+                              throw new Error("Failed pattern match: " + [ _115.constructor.name ]);
                           };
-                          throw new Error("Failed pattern match at Machine line 79, column 1 - line 80, column 1: " + [ _110.constructor.name ]);
-                      })())(Data_Maybe_Unsafe.fromJust(Data_List.tail(Data_Maybe_Unsafe.fromJust(Data_List.tail(_125)))));
+                          throw new Error("Failed pattern match at Machine line 79, column 1 - line 80, column 1: " + [ _114.constructor.name ]);
+                      })())(Data_Maybe_Unsafe.fromJust(Data_List.tail(Data_Maybe_Unsafe.fromJust(Data_List.tail(_129)))));
                   })(machine));
               })(takeTwo(machine.stack));
           };
-          if (_106 instanceof COMPARE) {
-              return Data_Maybe.maybe(throwErr(StackUnderflow.value))(function (_23) {
+          if (_107 instanceof COMPARE) {
+              return Data_Maybe.maybe(throwErr(StackUnderflow.value))(function (_24) {
                   return Prelude.pure(Data_Either.applicativeEither)(Data_Lens_Setter.over(stack(Data_Profunctor_Strong.strongFn))(Data_List.Cons.create((function () {
-                      var _115 = _23.value0 === _23.value1;
-                      if (_115) {
+                      var _119 = _24.value0 === _24.value1;
+                      if (_119) {
                           return 0;
                       };
-                      if (!_115) {
-                          var _116 = _23.value0 > _23.value1;
-                          if (_116) {
+                      if (!_119) {
+                          var _120 = _24.value0 > _24.value1;
+                          if (_120) {
                               return 1;
                           };
-                          if (!_116) {
+                          if (!_120) {
                               return -1;
                           };
-                          throw new Error("Failed pattern match: " + [ _116.constructor.name ]);
+                          throw new Error("Failed pattern match: " + [ _120.constructor.name ]);
                       };
-                      throw new Error("Failed pattern match at Machine line 79, column 1 - line 80, column 1: " + [ _115.constructor.name ]);
+                      throw new Error("Failed pattern match at Machine line 79, column 1 - line 80, column 1: " + [ _119.constructor.name ]);
                   })()))(machine));
               })(takeTwo(machine.stack));
           };
-          throw new Error("Failed pattern match at Machine line 79, column 1 - line 80, column 1: " + [ _106.constructor.name ]);
+          throw new Error("Failed pattern match at Machine line 79, column 1 - line 80, column 1: " + [ _107.constructor.name ]);
       })());
   };
   var halted = function (machine) {
-      var _119 = Zipper.current(machine.code);
-      if (_119 instanceof HALT) {
+      var _123 = Zipper.current(machine.code);
+      if (_123 instanceof HALT) {
           return true;
       };
       return Data_Either.isLeft($$eval(machine));
   };
   var hasErrors = function (machine) {
-      var _120 = $$eval(machine);
-      if (_120 instanceof Data_Either.Left) {
-          return new Data_Maybe.Just(_120.value0);
+      var _124 = $$eval(machine);
+      if (_124 instanceof Data_Either.Left) {
+          return new Data_Maybe.Just(_124.value0);
       };
-      if (_120 instanceof Data_Either.Right) {
+      if (_124 instanceof Data_Either.Right) {
           return Data_Maybe.Nothing.value;
       };
-      throw new Error("Failed pattern match at Machine line 165, column 1 - line 166, column 1: " + [ _120.constructor.name ]);
+      throw new Error("Failed pattern match at Machine line 165, column 1 - line 166, column 1: " + [ _124.constructor.name ]);
   };
   exports["StackUnderflow"] = StackUnderflow;
   exports["UnknownInstruction"] = UnknownInstruction;
@@ -3436,109 +3438,143 @@ var PS = { };
           y: 80.0
       }
   };
+  var splitLine = function (text) {
+      return function (i) {
+          var n = i * 80 | 0;
+          var _15 = Data_String.uncons(Data_String.drop(n + 79 | 0)(text));
+          if (_15 instanceof Data_Maybe.Nothing) {
+              return Data_String.take(80)(Data_String.drop(n)(text));
+          };
+          if (_15 instanceof Data_Maybe.Just) {
+              var _16 = Prelude["=="](Prelude.eqChar)(_15.value0.head)(" ");
+              if (_16) {
+                  return Data_String.take(80)(Data_String.drop(n)(text));
+              };
+              if (!_16) {
+                  var _17 = Data_String.uncons(Data_String.drop(n + 80 | 0)(text));
+                  if (_17 instanceof Data_Maybe.Nothing) {
+                      return Data_String.take(80)(Data_String.drop(n)(text));
+                  };
+                  if (_17 instanceof Data_Maybe.Just) {
+                      var _18 = Prelude["=="](Prelude.eqChar)(_17.value0.head)(" ");
+                      if (_18) {
+                          return Data_String.take(80)(Data_String.drop(n)(text));
+                      };
+                      if (!_18) {
+                          return Data_String.take(80)(Data_String.drop(n)(text)) + "-";
+                      };
+                      throw new Error("Failed pattern match: " + [ _18.constructor.name ]);
+                  };
+                  throw new Error("Failed pattern match: " + [ _17.constructor.name ]);
+              };
+              throw new Error("Failed pattern match at SimScreen line 400, column 1 - line 422, column 1: " + [ _16.constructor.name ]);
+          };
+          throw new Error("Failed pattern match at SimScreen line 400, column 1 - line 422, column 1: " + [ _15.constructor.name ]);
+      };
+  };
   var runTest = function (state) {
       var insts = Data_Traversable.traverse(Data_List.traversableList)(Data_Either.applicativeEither)(Machine.translate)(Data_List.reverse(state.code));
       if (insts instanceof Data_Either.Left) {
-          var _16 = {};
-          for (var _17 in state) {
-              if (state.hasOwnProperty(_17)) {
-                  _16[_17] = state[_17];
+          var _26 = {};
+          for (var _27 in state) {
+              if (state.hasOwnProperty(_27)) {
+                  _26[_27] = state[_27];
               };
           };
-          _16.state = ShowError.create("Loading Code failed: " + (Prelude.show(Machine.showError)(insts.value0) + "."));
-          return _16;
+          _26.state = ShowError.create("Loading Code failed: " + (Prelude.show(Machine.showError)(insts.value0) + "."));
+          return _26;
       };
       if (insts instanceof Data_Either.Right) {
-          var _19 = {};
-          for (var _20 in state) {
-              if (state.hasOwnProperty(_20)) {
-                  _19[_20] = state[_20];
+          var _29 = {};
+          for (var _30 in state) {
+              if (state.hasOwnProperty(_30)) {
+                  _29[_30] = state[_30];
               };
           };
-          _19.machine = Machine.mkMachine(insts.value0)((Zipper.current(state.tests)).input);
-          return _19;
+          _29.machine = Machine.mkMachine(insts.value0)((Zipper.current(state.tests)).input);
+          return _29;
       };
-      throw new Error("Failed pattern match at SimScreen line 269, column 1 - line 278, column 1: " + [ insts.constructor.name ]);
+      throw new Error("Failed pattern match at SimScreen line 270, column 1 - line 279, column 1: " + [ insts.constructor.name ]);
   };
   var resetMachine = function (input) {
       return function (state) {
-          var _22 = input.screenDir < 0.0;
-          if (_22) {
+          var _32 = input.screenDir < 0.0;
+          if (_32) {
               if (state.state instanceof ShowMachine) {
-                  var _24 = {};
-                  for (var _25 in state) {
-                      if (state.hasOwnProperty(_25)) {
-                          _24[_25] = state[_25];
+                  var _34 = {};
+                  for (var _35 in state) {
+                      if (state.hasOwnProperty(_35)) {
+                          _34[_35] = state[_35];
                       };
                   };
-                  _24.machine = Data_Maybe.Nothing.value;
-                  _24.code = Data_List.Nil.value;
-                  _24.inputs = Data_List.Nil.value;
-                  _24.outputs = Data_List.Nil.value;
-                  _24.currLine = "";
-                  return _24;
+                  _34.machine = Data_Maybe.Nothing.value;
+                  _34.code = Data_List.Nil.value;
+                  _34.inputs = Data_List.Nil.value;
+                  _34.outputs = Data_List.Nil.value;
+                  _34.currLine = "";
+                  return _34;
               };
               if (state.state instanceof ShowOutput) {
-                  var _26 = {};
-                  for (var _27 in state) {
-                      if (state.hasOwnProperty(_27)) {
-                          _26[_27] = state[_27];
+                  var _36 = {};
+                  for (var _37 in state) {
+                      if (state.hasOwnProperty(_37)) {
+                          _36[_37] = state[_37];
                       };
                   };
-                  _26.state = ShowMachine.value;
-                  return _26;
+                  _36.state = ShowMachine.value;
+                  return _36;
               };
               if (state.state instanceof ShowInput) {
-                  var _28 = {};
-                  for (var _29 in state) {
-                      if (state.hasOwnProperty(_29)) {
-                          _28[_29] = state[_29];
+                  var _38 = {};
+                  for (var _39 in state) {
+                      if (state.hasOwnProperty(_39)) {
+                          _38[_39] = state[_39];
                       };
                   };
-                  _28.state = ShowMachine.value;
-                  return _28;
+                  _38.state = ShowMachine.value;
+                  return _38;
               };
               if (state.state instanceof ShowError) {
-                  var _30 = {};
-                  for (var _31 in state) {
-                      if (state.hasOwnProperty(_31)) {
-                          _30[_31] = state[_31];
+                  var _40 = {};
+                  for (var _41 in state) {
+                      if (state.hasOwnProperty(_41)) {
+                          _40[_41] = state[_41];
                       };
                   };
-                  _30.state = ShowMachine.value;
-                  return _30;
+                  _40.state = ShowMachine.value;
+                  return _40;
               };
               if (state.state instanceof RunMachine) {
-                  var _33 = {};
-                  for (var _34 in state) {
-                      if (state.hasOwnProperty(_34)) {
-                          _33[_34] = state[_34];
+                  var _43 = {};
+                  for (var _44 in state) {
+                      if (state.hasOwnProperty(_44)) {
+                          _43[_44] = state[_44];
                       };
                   };
-                  _33.state = ShowMachine.value;
-                  _33.machine = Data_Maybe.Nothing.value;
-                  return _33;
+                  _43.state = ShowMachine.value;
+                  _43.machine = Data_Maybe.Nothing.value;
+                  return _43;
               };
               if (state.state instanceof TestMachine) {
-                  var _35 = {};
-                  for (var _36 in state) {
-                      if (state.hasOwnProperty(_36)) {
-                          _35[_36] = state[_36];
+                  var _45 = {};
+                  for (var _46 in state) {
+                      if (state.hasOwnProperty(_46)) {
+                          _45[_46] = state[_46];
                       };
                   };
-                  _35.state = ShowMachine.value;
-                  _35.machine = Data_Maybe.Nothing.value;
-                  return _35;
+                  _45.state = ShowMachine.value;
+                  _45.machine = Data_Maybe.Nothing.value;
+                  return _45;
               };
               if (state.state instanceof Done) {
                   return state;
               };
               throw new Error("Failed pattern match: " + [ state.state.constructor.name ]);
           };
-          if (!_22) {
+          if (!_32) {
               return state;
           };
-          throw new Error("Failed pattern match at SimScreen line 159, column 1 - line 160, column 1: " + [ _22.constructor.name ]);
+          throw new Error("Failed pattern match at SimScreen line 160, column 1 - line 161, column 1: " + [ _32.constructor.name ]);
       };
   };
   var renderMachine = function (ctx) {
@@ -3562,7 +3598,14 @@ var PS = { };
                       h: 100.0
                   })();
                   Graphics_Canvas.setFillStyle("white")(ctx)();
-                  Graphics_Canvas.fillText(ctx)(err)(120.0)(60.0)();
+                  Graphics_Canvas.setFont("16px monospace")(ctx)();
+                  var texts = Prelude.map(Data_List.functorList)(splitLine(err))(Data_List.range(0)(Data_String.length(err) / 80 | 0));
+                  Data_Traversable.sequence(Data_List.traversableList)(Control_Monad_Eff.applicativeEff)(Data_List.zipWith(function (i) {
+                      return function (text) {
+                          return Graphics_Canvas.fillText(ctx)(text)(120.0)(60.0 + 30.0 * Data_Int.toNumber(i));
+                      };
+                  })(Data_List.range(0)(Data_List.length(texts)))(texts))();
+                  Graphics_Canvas.setFont("18px monospace")(ctx)();
                   return Prelude.unit;
               };
           };
@@ -3599,27 +3642,27 @@ var PS = { };
           return i;
       };
       if (i.mouseClick instanceof Data_Maybe.Just) {
-          var _38 = CanvasUtils.pointInRect(i.mouseClick.value0)(zeroButton);
-          if (_38) {
-              return Data_Lens_Setter.set(function (_158) {
-                  return Input.zeroOne(Data_Profunctor_Strong.strongFn)(Input.zero(Data_Profunctor_Strong.strongFn)(_158));
+          var _48 = CanvasUtils.pointInRect(i.mouseClick.value0)(zeroButton);
+          if (_48) {
+              return Data_Lens_Setter.set(function (_168) {
+                  return Input.zeroOne(Data_Profunctor_Strong.strongFn)(Input.zero(Data_Profunctor_Strong.strongFn)(_168));
               })(true)(i);
           };
-          if (!_38) {
-              var _39 = CanvasUtils.pointInRect(i.mouseClick.value0)(oneButton);
-              if (_39) {
-                  return Data_Lens_Setter.set(function (_159) {
-                      return Input.zeroOne(Data_Profunctor_Strong.strongFn)(Input.one(Data_Profunctor_Strong.strongFn)(_159));
+          if (!_48) {
+              var _49 = CanvasUtils.pointInRect(i.mouseClick.value0)(oneButton);
+              if (_49) {
+                  return Data_Lens_Setter.set(function (_169) {
+                      return Input.zeroOne(Data_Profunctor_Strong.strongFn)(Input.one(Data_Profunctor_Strong.strongFn)(_169));
                   })(true)(i);
               };
-              if (!_39) {
+              if (!_49) {
                   return i;
               };
-              throw new Error("Failed pattern match: " + [ _39.constructor.name ]);
+              throw new Error("Failed pattern match: " + [ _49.constructor.name ]);
           };
-          throw new Error("Failed pattern match at SimScreen line 103, column 1 - line 115, column 1: " + [ _38.constructor.name ]);
+          throw new Error("Failed pattern match at SimScreen line 104, column 1 - line 116, column 1: " + [ _48.constructor.name ]);
       };
-      throw new Error("Failed pattern match at SimScreen line 103, column 1 - line 115, column 1: " + [ i.mouseClick.constructor.name ]);
+      throw new Error("Failed pattern match at SimScreen line 104, column 1 - line 116, column 1: " + [ i.mouseClick.constructor.name ]);
   };
   var mkSimScreen = function (tests) {
       return function (img) {
@@ -3641,68 +3684,68 @@ var PS = { };
       return _9.inputs;
   })(function (_10) {
       return function (_11) {
-          var _41 = {};
-          for (var _42 in _10) {
-              if (_10.hasOwnProperty(_42)) {
-                  _41[_42] = _10[_42];
+          var _51 = {};
+          for (var _52 in _10) {
+              if (_10.hasOwnProperty(_52)) {
+                  _51[_52] = _10[_52];
               };
           };
-          _41.inputs = _11;
-          return _41;
+          _51.inputs = _11;
+          return _51;
       };
   });
   var startMachine = function (input) {
       return function (state) {
-          var _43 = Data_Maybe.isJust(state.machine);
-          if (_43) {
-              var _44 = {};
-              for (var _45 in state) {
-                  if (state.hasOwnProperty(_45)) {
-                      _44[_45] = state[_45];
+          var _53 = Data_Maybe.isJust(state.machine);
+          if (_53) {
+              var _54 = {};
+              for (var _55 in state) {
+                  if (state.hasOwnProperty(_55)) {
+                      _54[_55] = state[_55];
                   };
               };
-              _44.machine = Data_Maybe.Nothing.value;
-              return _44;
+              _54.machine = Data_Maybe.Nothing.value;
+              return _54;
           };
-          if (!_43) {
+          if (!_53) {
               var insts = Data_Traversable.traverse(Data_List.traversableList)(Data_Either.applicativeEither)(Machine.translate)(Data_List.reverse(state.code));
               if (insts instanceof Data_Either.Left) {
-                  var _47 = {};
-                  for (var _48 in state) {
-                      if (state.hasOwnProperty(_48)) {
-                          _47[_48] = state[_48];
+                  var _57 = {};
+                  for (var _58 in state) {
+                      if (state.hasOwnProperty(_58)) {
+                          _57[_58] = state[_58];
                       };
                   };
-                  _47.state = ShowError.create("Code load failed: " + (Prelude.show(Machine.showError)(insts.value0) + "."));
-                  return _47;
+                  _57.state = ShowError.create("Code load failed: " + (Prelude.show(Machine.showError)(insts.value0) + "."));
+                  return _57;
               };
               if (insts instanceof Data_Either.Right) {
-                  var _50 = Data_Traversable.traverse(Data_List.traversableList)(Data_Either.applicativeEither)(Machine.strBinToInt)(state.inputs);
-                  if (_50 instanceof Data_Either.Left) {
-                      var _51 = {};
-                      for (var _52 in state) {
-                          if (state.hasOwnProperty(_52)) {
-                              _51[_52] = state[_52];
+                  var _60 = Data_Traversable.traverse(Data_List.traversableList)(Data_Either.applicativeEither)(Machine.strBinToInt)(state.inputs);
+                  if (_60 instanceof Data_Either.Left) {
+                      var _61 = {};
+                      for (var _62 in state) {
+                          if (state.hasOwnProperty(_62)) {
+                              _61[_62] = state[_62];
                           };
                       };
-                      _51.state = ShowError.create("Input load failed: " + (Prelude.show(Machine.showError)(_50.value0) + "."));
-                      return _51;
+                      _61.state = ShowError.create("Input load failed: " + (Prelude.show(Machine.showError)(_60.value0) + "."));
+                      return _61;
                   };
-                  if (_50 instanceof Data_Either.Right) {
-                      var _54 = {};
-                      for (var _55 in state) {
-                          if (state.hasOwnProperty(_55)) {
-                              _54[_55] = state[_55];
+                  if (_60 instanceof Data_Either.Right) {
+                      var _64 = {};
+                      for (var _65 in state) {
+                          if (state.hasOwnProperty(_65)) {
+                              _64[_65] = state[_65];
                           };
                       };
-                      _54.machine = Machine.mkMachine(insts.value0)(_50.value0);
-                      return _54;
+                      _64.machine = Machine.mkMachine(insts.value0)(_60.value0);
+                      return _64;
                   };
-                  throw new Error("Failed pattern match: " + [ _50.constructor.name ]);
+                  throw new Error("Failed pattern match: " + [ _60.constructor.name ]);
               };
               throw new Error("Failed pattern match: " + [ insts.constructor.name ]);
           };
-          throw new Error("Failed pattern match at SimScreen line 137, column 1 - line 138, column 1: " + [ _43.constructor.name ]);
+          throw new Error("Failed pattern match at SimScreen line 138, column 1 - line 139, column 1: " + [ _53.constructor.name ]);
       };
   };
   var getPosition = function (x) {
@@ -3794,7 +3837,7 @@ var PS = { };
                   if (screen.state instanceof Done) {
                       return renderDone(ctx)(screen);
                   };
-                  throw new Error("Failed pattern match at SimScreen line 295, column 1 - line 296, column 1: " + [ screen.state.constructor.name ]);
+                  throw new Error("Failed pattern match at SimScreen line 296, column 1 - line 297, column 1: " + [ screen.state.constructor.name ]);
               })()();
               (function () {
                   if (screen.state instanceof ShowMachine) {
@@ -3839,7 +3882,7 @@ var PS = { };
                           return Graphics_Canvas.fillText(ctx)("Done")(120.0)(40.0)();
                       };
                   };
-                  throw new Error("Failed pattern match at SimScreen line 295, column 1 - line 296, column 1: " + [ screen.state.constructor.name ]);
+                  throw new Error("Failed pattern match at SimScreen line 296, column 1 - line 297, column 1: " + [ screen.state.constructor.name ]);
               })()();
               return Prelude.unit;
           };
@@ -3855,28 +3898,28 @@ var PS = { };
       return _3.currLine;
   })(function (_4) {
       return function (_5) {
-          var _63 = {};
-          for (var _64 in _4) {
-              if (_4.hasOwnProperty(_64)) {
-                  _63[_64] = _4[_64];
+          var _73 = {};
+          for (var _74 in _4) {
+              if (_4.hasOwnProperty(_74)) {
+                  _73[_74] = _4[_74];
               };
           };
-          _63.currLine = _5;
-          return _63;
+          _73.currLine = _5;
+          return _73;
       };
   });
   var currInput = Data_Lens_Lens.lens(function (_0) {
       return _0.currInput;
   })(function (_1) {
       return function (_2) {
-          var _65 = {};
-          for (var _66 in _1) {
-              if (_1.hasOwnProperty(_66)) {
-                  _65[_66] = _1[_66];
+          var _75 = {};
+          for (var _76 in _1) {
+              if (_1.hasOwnProperty(_76)) {
+                  _75[_76] = _1[_76];
               };
           };
-          _65.currInput = _2;
-          return _65;
+          _75.currInput = _2;
+          return _75;
       };
   });
   var updateInput = function (input) {
@@ -3897,16 +3940,16 @@ var PS = { };
                           throw new Error("Failed pattern match: " + [ input.zeroOne.one.constructor.name ]);
                       })();
                   };
-                  throw new Error("Failed pattern match at SimScreen line 282, column 11 - line 283, column 7: " + [ input.zeroOne.zero.constructor.name ]);
+                  throw new Error("Failed pattern match at SimScreen line 283, column 11 - line 284, column 7: " + [ input.zeroOne.zero.constructor.name ]);
               })();
-              var _70 = Data_String.length(line) >= 5;
-              if (_70) {
+              var _80 = Data_String.length(line) >= 5;
+              if (_80) {
                   return Data_Lens_Setter.over(inputs(Data_Profunctor_Strong.strongFn))(Data_List.Cons.create(Data_String.take(5)(line)))(Data_Lens_Setter.set(currInput(Data_Profunctor_Strong.strongFn))(Data_String.drop(5)(line))(state));
               };
-              if (!_70) {
+              if (!_80) {
                   return Data_Lens_Setter.set(currInput(Data_Profunctor_Strong.strongFn))(line)(state);
               };
-              throw new Error("Failed pattern match at SimScreen line 278, column 1 - line 279, column 1: " + [ _70.constructor.name ]);
+              throw new Error("Failed pattern match at SimScreen line 279, column 1 - line 280, column 1: " + [ _80.constructor.name ]);
           };
           return state;
       };
@@ -3914,284 +3957,253 @@ var PS = { };
   var updateState = function (input) {
       return function (state) {
           if (state.state instanceof ShowMachine) {
-              var _72 = Utils.fst(input.io);
-              if (_72) {
-                  var _73 = {};
-                  for (var _74 in state) {
-                      if (state.hasOwnProperty(_74)) {
-                          _73[_74] = state[_74];
+              var _82 = Utils.fst(input.io);
+              if (_82) {
+                  var _83 = {};
+                  for (var _84 in state) {
+                      if (state.hasOwnProperty(_84)) {
+                          _83[_84] = state[_84];
                       };
                   };
-                  _73.state = ShowInput.value;
-                  return _73;
+                  _83.state = ShowInput.value;
+                  return _83;
               };
-              if (!_72) {
-                  var _75 = Utils.snd(input.io);
-                  if (_75) {
-                      var _76 = {};
-                      for (var _77 in state) {
-                          if (state.hasOwnProperty(_77)) {
-                              _76[_77] = state[_77];
+              if (!_82) {
+                  var _85 = Utils.snd(input.io);
+                  if (_85) {
+                      var _86 = {};
+                      for (var _87 in state) {
+                          if (state.hasOwnProperty(_87)) {
+                              _86[_87] = state[_87];
                           };
                       };
-                      _76.state = ShowOutput.value;
-                      return _76;
+                      _86.state = ShowOutput.value;
+                      return _86;
                   };
-                  if (!_75) {
+                  if (!_85) {
                       if (input.runTests) {
-                          var _79 = {};
-                          for (var _80 in state) {
-                              if (state.hasOwnProperty(_80)) {
-                                  _79[_80] = state[_80];
+                          var _89 = {};
+                          for (var _90 in state) {
+                              if (state.hasOwnProperty(_90)) {
+                                  _89[_90] = state[_90];
                               };
                           };
-                          _79.state = TestMachine.value;
-                          return _79;
+                          _89.state = TestMachine.value;
+                          return _89;
                       };
                       if (!input.runTests) {
-                          var _81 = input.screenDir > 0.0;
-                          if (_81) {
-                              var _82 = {};
-                              for (var _83 in state) {
-                                  if (state.hasOwnProperty(_83)) {
-                                      _82[_83] = state[_83];
+                          var _91 = input.screenDir > 0.0;
+                          if (_91) {
+                              var _92 = {};
+                              for (var _93 in state) {
+                                  if (state.hasOwnProperty(_93)) {
+                                      _92[_93] = state[_93];
                                   };
                               };
-                              _82.state = RunMachine.value;
-                              return _82;
+                              _92.state = RunMachine.value;
+                              return _92;
                           };
-                          if (!_81) {
+                          if (!_91) {
                               return state;
                           };
-                          throw new Error("Failed pattern match: " + [ _81.constructor.name ]);
+                          throw new Error("Failed pattern match: " + [ _91.constructor.name ]);
                       };
                       throw new Error("Failed pattern match: " + [ input.runTests.constructor.name ]);
                   };
-                  throw new Error("Failed pattern match: " + [ _75.constructor.name ]);
+                  throw new Error("Failed pattern match: " + [ _85.constructor.name ]);
               };
-              throw new Error("Failed pattern match at SimScreen line 180, column 1 - line 181, column 1: " + [ _72.constructor.name ]);
+              throw new Error("Failed pattern match at SimScreen line 181, column 1 - line 182, column 1: " + [ _82.constructor.name ]);
           };
           if (state.state instanceof ShowInput) {
               return updateInput(input)((function () {
-                  var _84 = Utils.fst(input.io);
-                  if (_84) {
-                      var _85 = {};
-                      for (var _86 in state) {
-                          if (state.hasOwnProperty(_86)) {
-                              _85[_86] = state[_86];
+                  var _94 = Utils.fst(input.io);
+                  if (_94) {
+                      var _95 = {};
+                      for (var _96 in state) {
+                          if (state.hasOwnProperty(_96)) {
+                              _95[_96] = state[_96];
                           };
                       };
-                      _85.state = ShowMachine.value;
-                      return _85;
+                      _95.state = ShowMachine.value;
+                      return _95;
                   };
-                  if (!_84) {
-                      var _87 = Utils.snd(input.io);
-                      if (_87) {
-                          var _88 = {};
-                          for (var _89 in state) {
-                              if (state.hasOwnProperty(_89)) {
-                                  _88[_89] = state[_89];
+                  if (!_94) {
+                      var _97 = Utils.snd(input.io);
+                      if (_97) {
+                          var _98 = {};
+                          for (var _99 in state) {
+                              if (state.hasOwnProperty(_99)) {
+                                  _98[_99] = state[_99];
                               };
                           };
-                          _88.state = ShowOutput.value;
-                          return _88;
+                          _98.state = ShowOutput.value;
+                          return _98;
                       };
-                      if (!_87) {
+                      if (!_97) {
                           if (input.runTests) {
-                              var _91 = {};
-                              for (var _92 in state) {
-                                  if (state.hasOwnProperty(_92)) {
-                                      _91[_92] = state[_92];
+                              var _101 = {};
+                              for (var _102 in state) {
+                                  if (state.hasOwnProperty(_102)) {
+                                      _101[_102] = state[_102];
                                   };
                               };
-                              _91.state = TestMachine.value;
-                              return _91;
+                              _101.state = TestMachine.value;
+                              return _101;
                           };
                           if (!input.runTests) {
-                              var _93 = input.screenDir > 0.0;
-                              if (_93) {
-                                  var _94 = {};
-                                  for (var _95 in state) {
-                                      if (state.hasOwnProperty(_95)) {
-                                          _94[_95] = state[_95];
+                              var _103 = input.screenDir > 0.0;
+                              if (_103) {
+                                  var _104 = {};
+                                  for (var _105 in state) {
+                                      if (state.hasOwnProperty(_105)) {
+                                          _104[_105] = state[_105];
                                       };
                                   };
-                                  _94.state = RunMachine.value;
-                                  return _94;
+                                  _104.state = RunMachine.value;
+                                  return _104;
                               };
-                              if (!_93) {
+                              if (!_103) {
                                   return state;
                               };
-                              throw new Error("Failed pattern match: " + [ _93.constructor.name ]);
+                              throw new Error("Failed pattern match: " + [ _103.constructor.name ]);
                           };
                           throw new Error("Failed pattern match: " + [ input.runTests.constructor.name ]);
                       };
-                      throw new Error("Failed pattern match: " + [ _87.constructor.name ]);
+                      throw new Error("Failed pattern match: " + [ _97.constructor.name ]);
                   };
-                  throw new Error("Failed pattern match at SimScreen line 180, column 1 - line 181, column 1: " + [ _84.constructor.name ]);
+                  throw new Error("Failed pattern match at SimScreen line 181, column 1 - line 182, column 1: " + [ _94.constructor.name ]);
               })());
           };
           if (state.state instanceof ShowOutput) {
-              var _96 = Utils.snd(input.io);
-              if (_96) {
-                  var _97 = {};
-                  for (var _98 in state) {
-                      if (state.hasOwnProperty(_98)) {
-                          _97[_98] = state[_98];
+              var _106 = Utils.snd(input.io);
+              if (_106) {
+                  var _107 = {};
+                  for (var _108 in state) {
+                      if (state.hasOwnProperty(_108)) {
+                          _107[_108] = state[_108];
                       };
                   };
-                  _97.state = ShowMachine.value;
-                  return _97;
+                  _107.state = ShowMachine.value;
+                  return _107;
               };
-              if (!_96) {
-                  var _99 = Utils.fst(input.io);
-                  if (_99) {
-                      var _100 = {};
-                      for (var _101 in state) {
-                          if (state.hasOwnProperty(_101)) {
-                              _100[_101] = state[_101];
+              if (!_106) {
+                  var _109 = Utils.fst(input.io);
+                  if (_109) {
+                      var _110 = {};
+                      for (var _111 in state) {
+                          if (state.hasOwnProperty(_111)) {
+                              _110[_111] = state[_111];
                           };
                       };
-                      _100.state = ShowInput.value;
-                      return _100;
+                      _110.state = ShowInput.value;
+                      return _110;
                   };
-                  if (!_99) {
+                  if (!_109) {
                       if (input.runTests) {
-                          var _103 = {};
-                          for (var _104 in state) {
-                              if (state.hasOwnProperty(_104)) {
-                                  _103[_104] = state[_104];
-                              };
-                          };
-                          _103.state = TestMachine.value;
-                          return _103;
-                      };
-                      if (!input.runTests) {
-                          var _105 = input.screenDir > 0.0;
-                          if (_105) {
-                              var _106 = {};
-                              for (var _107 in state) {
-                                  if (state.hasOwnProperty(_107)) {
-                                      _106[_107] = state[_107];
-                                  };
-                              };
-                              _106.state = RunMachine.value;
-                              return _106;
-                          };
-                          if (!_105) {
-                              return state;
-                          };
-                          throw new Error("Failed pattern match: " + [ _105.constructor.name ]);
-                      };
-                      throw new Error("Failed pattern match: " + [ input.runTests.constructor.name ]);
-                  };
-                  throw new Error("Failed pattern match: " + [ _99.constructor.name ]);
-              };
-              throw new Error("Failed pattern match at SimScreen line 180, column 1 - line 181, column 1: " + [ _96.constructor.name ]);
-          };
-          if (state.state instanceof TestMachine) {
-              if (state.machine instanceof Data_Maybe.Nothing) {
-                  return runTest((function () {
-                      var _109 = {};
-                      for (var _110 in state) {
-                          if (state.hasOwnProperty(_110)) {
-                              _109[_110] = state[_110];
-                          };
-                      };
-                      _109.tests = Zipper.start(state.tests);
-                      return _109;
-                  })());
-              };
-              if (state.machine instanceof Data_Maybe.Just) {
-                  var _111 = Machine.halted(state.machine.value0);
-                  if (_111) {
-                      var _112 = Machine.hasErrors(state.machine.value0);
-                      if (_112 instanceof Data_Maybe.Just) {
                           var _113 = {};
                           for (var _114 in state) {
                               if (state.hasOwnProperty(_114)) {
                                   _113[_114] = state[_114];
                               };
                           };
-                          _113.state = ShowError.create("Run failed: " + (Prelude.show(Machine.showError)(_112.value0) + "."));
+                          _113.state = TestMachine.value;
                           return _113;
                       };
-                      if (_112 instanceof Data_Maybe.Nothing) {
-                          var _116 = Prelude["=="](Data_List.eqList(Prelude.eqInt))((Zipper.current(state.tests)).output)(state.machine.value0.output);
-                          if (_116) {
-                              var _117 = Utils.fst(Zipper.next(state.tests));
-                              if (_117) {
+                      if (!input.runTests) {
+                          var _115 = input.screenDir > 0.0;
+                          if (_115) {
+                              var _116 = {};
+                              for (var _117 in state) {
+                                  if (state.hasOwnProperty(_117)) {
+                                      _116[_117] = state[_117];
+                                  };
+                              };
+                              _116.state = RunMachine.value;
+                              return _116;
+                          };
+                          if (!_115) {
+                              return state;
+                          };
+                          throw new Error("Failed pattern match: " + [ _115.constructor.name ]);
+                      };
+                      throw new Error("Failed pattern match: " + [ input.runTests.constructor.name ]);
+                  };
+                  throw new Error("Failed pattern match: " + [ _109.constructor.name ]);
+              };
+              throw new Error("Failed pattern match at SimScreen line 181, column 1 - line 182, column 1: " + [ _106.constructor.name ]);
+          };
+          if (state.state instanceof TestMachine) {
+              if (state.machine instanceof Data_Maybe.Nothing) {
+                  return runTest((function () {
+                      var _119 = {};
+                      for (var _120 in state) {
+                          if (state.hasOwnProperty(_120)) {
+                              _119[_120] = state[_120];
+                          };
+                      };
+                      _119.tests = Zipper.start(state.tests);
+                      return _119;
+                  })());
+              };
+              if (state.machine instanceof Data_Maybe.Just) {
+                  var _121 = Machine.halted(state.machine.value0);
+                  if (_121) {
+                      var _122 = Machine.hasErrors(state.machine.value0);
+                      if (_122 instanceof Data_Maybe.Just) {
+                          var _123 = {};
+                          for (var _124 in state) {
+                              if (state.hasOwnProperty(_124)) {
+                                  _123[_124] = state[_124];
+                              };
+                          };
+                          _123.state = ShowError.create("Run failed: " + (Prelude.show(Machine.showError)(_122.value0) + "."));
+                          return _123;
+                      };
+                      if (_122 instanceof Data_Maybe.Nothing) {
+                          var _126 = Prelude["=="](Data_List.eqList(Prelude.eqInt))((Zipper.current(state.tests)).output)(state.machine.value0.output);
+                          if (_126) {
+                              var _127 = Utils.fst(Zipper.next(state.tests));
+                              if (_127) {
                                   return runTest((function () {
-                                      var _118 = {};
-                                      for (var _119 in state) {
-                                          if (state.hasOwnProperty(_119)) {
-                                              _118[_119] = state[_119];
+                                      var _128 = {};
+                                      for (var _129 in state) {
+                                          if (state.hasOwnProperty(_129)) {
+                                              _128[_129] = state[_129];
                                           };
                                       };
-                                      _118.tests = Utils.snd(Zipper.next(state.tests));
-                                      return _118;
+                                      _128.tests = Utils.snd(Zipper.next(state.tests));
+                                      return _128;
                                   })());
                               };
-                              if (!_117) {
-                                  var _120 = {};
-                                  for (var _121 in state) {
-                                      if (state.hasOwnProperty(_121)) {
-                                          _120[_121] = state[_121];
+                              if (!_127) {
+                                  var _130 = {};
+                                  for (var _131 in state) {
+                                      if (state.hasOwnProperty(_131)) {
+                                          _130[_131] = state[_131];
                                       };
                                   };
-                                  _120.state = Done.value;
-                                  return _120;
+                                  _130.state = Done.value;
+                                  return _130;
                               };
-                              throw new Error("Failed pattern match: " + [ _117.constructor.name ]);
+                              throw new Error("Failed pattern match: " + [ _127.constructor.name ]);
                           };
-                          if (!_116) {
-                              var _122 = {};
-                              for (var _123 in state) {
-                                  if (state.hasOwnProperty(_123)) {
-                                      _122[_123] = state[_123];
+                          if (!_126) {
+                              var _132 = {};
+                              for (var _133 in state) {
+                                  if (state.hasOwnProperty(_133)) {
+                                      _132[_133] = state[_133];
                                   };
                               };
-                              _122.state = ShowError.create("Test failed: input was: " + (Prelude.show(Data_List.showList(Prelude.showInt))((Zipper.current(state.tests)).input) + (", expected output was: " + (Prelude.show(Data_List.showList(Prelude.showInt))((Zipper.current(state.tests)).output) + (". got: " + (Prelude.show(Data_List.showList(Prelude.showInt))(state.machine.value0.output) + "."))))));
-                              return _122;
+                              _132.state = ShowError.create("Test failed: input was: " + (Prelude.show(Data_List.showList(Prelude.showInt))((Zipper.current(state.tests)).input) + (", expected output was: " + (Prelude.show(Data_List.showList(Prelude.showInt))(Data_List.reverse((Zipper.current(state.tests)).output)) + (". got: " + (Prelude.show(Data_List.showList(Prelude.showInt))(Data_List.reverse(state.machine.value0.output)) + "."))))));
+                              return _132;
                           };
-                          throw new Error("Failed pattern match: " + [ _116.constructor.name ]);
+                          throw new Error("Failed pattern match: " + [ _126.constructor.name ]);
                       };
-                      throw new Error("Failed pattern match: " + [ _112.constructor.name ]);
+                      throw new Error("Failed pattern match: " + [ _122.constructor.name ]);
                   };
-                  if (!_111) {
-                      var _124 = Machine["eval"](state.machine.value0);
-                      if (_124 instanceof Data_Either.Left) {
-                          var _125 = {};
-                          for (var _126 in state) {
-                              if (state.hasOwnProperty(_126)) {
-                                  _125[_126] = state[_126];
-                              };
-                          };
-                          _125.state = ShowError.create("Run failed: " + (Prelude.show(Machine.showError)(_124.value0) + "."));
-                          return _125;
-                      };
-                      if (_124 instanceof Data_Either.Right) {
-                          var _128 = {};
-                          for (var _129 in state) {
-                              if (state.hasOwnProperty(_129)) {
-                                  _128[_129] = state[_129];
-                              };
-                          };
-                          _128.machine = new Data_Maybe.Just(_124.value0);
-                          return _128;
-                      };
-                      throw new Error("Failed pattern match: " + [ _124.constructor.name ]);
-                  };
-                  throw new Error("Failed pattern match at SimScreen line 180, column 1 - line 181, column 1: " + [ _111.constructor.name ]);
-              };
-              throw new Error("Failed pattern match at SimScreen line 180, column 1 - line 181, column 1: " + [ state.machine.constructor.name ]);
-          };
-          if (state.state instanceof RunMachine) {
-              if (state.machine instanceof Data_Maybe.Just) {
-                  var _133 = Machine.halted(state.machine.value0);
-                  if (_133) {
-                      var _134 = Machine.hasErrors(state.machine.value0);
-                      if (_134 instanceof Data_Maybe.Just) {
+                  if (!_121) {
+                      var _134 = Machine["eval"](state.machine.value0);
+                      if (_134 instanceof Data_Either.Left) {
                           var _135 = {};
                           for (var _136 in state) {
                               if (state.hasOwnProperty(_136)) {
@@ -4201,50 +4213,81 @@ var PS = { };
                           _135.state = ShowError.create("Run failed: " + (Prelude.show(Machine.showError)(_134.value0) + "."));
                           return _135;
                       };
-                      if (_134 instanceof Data_Maybe.Nothing) {
+                      if (_134 instanceof Data_Either.Right) {
                           var _138 = {};
                           for (var _139 in state) {
                               if (state.hasOwnProperty(_139)) {
                                   _138[_139] = state[_139];
                               };
                           };
-                          _138.state = ShowOutput.value;
-                          _138.outputs = state.machine.value0.output;
-                          _138.machine = Data_Maybe.Nothing.value;
+                          _138.machine = new Data_Maybe.Just(_134.value0);
                           return _138;
                       };
                       throw new Error("Failed pattern match: " + [ _134.constructor.name ]);
                   };
-                  if (!_133) {
-                      var _140 = Machine["eval"](state.machine.value0);
-                      if (_140 instanceof Data_Either.Left) {
-                          var _141 = {};
-                          for (var _142 in state) {
-                              if (state.hasOwnProperty(_142)) {
-                                  _141[_142] = state[_142];
+                  throw new Error("Failed pattern match at SimScreen line 181, column 1 - line 182, column 1: " + [ _121.constructor.name ]);
+              };
+              throw new Error("Failed pattern match at SimScreen line 181, column 1 - line 182, column 1: " + [ state.machine.constructor.name ]);
+          };
+          if (state.state instanceof RunMachine) {
+              if (state.machine instanceof Data_Maybe.Just) {
+                  var _143 = Machine.halted(state.machine.value0);
+                  if (_143) {
+                      var _144 = Machine.hasErrors(state.machine.value0);
+                      if (_144 instanceof Data_Maybe.Just) {
+                          var _145 = {};
+                          for (var _146 in state) {
+                              if (state.hasOwnProperty(_146)) {
+                                  _145[_146] = state[_146];
                               };
                           };
-                          _141.state = ShowError.create("Run failed: " + (Prelude.show(Machine.showError)(_140.value0) + "."));
-                          return _141;
+                          _145.state = ShowError.create("Run failed: " + (Prelude.show(Machine.showError)(_144.value0) + "."));
+                          return _145;
                       };
-                      if (_140 instanceof Data_Either.Right) {
-                          var _144 = {};
-                          for (var _145 in state) {
-                              if (state.hasOwnProperty(_145)) {
-                                  _144[_145] = state[_145];
+                      if (_144 instanceof Data_Maybe.Nothing) {
+                          var _148 = {};
+                          for (var _149 in state) {
+                              if (state.hasOwnProperty(_149)) {
+                                  _148[_149] = state[_149];
                               };
                           };
-                          _144.machine = new Data_Maybe.Just(_140.value0);
-                          return _144;
+                          _148.state = ShowOutput.value;
+                          _148.outputs = state.machine.value0.output;
+                          _148.machine = Data_Maybe.Nothing.value;
+                          return _148;
                       };
-                      throw new Error("Failed pattern match: " + [ _140.constructor.name ]);
+                      throw new Error("Failed pattern match: " + [ _144.constructor.name ]);
                   };
-                  throw new Error("Failed pattern match at SimScreen line 180, column 1 - line 181, column 1: " + [ _133.constructor.name ]);
+                  if (!_143) {
+                      var _150 = Machine["eval"](state.machine.value0);
+                      if (_150 instanceof Data_Either.Left) {
+                          var _151 = {};
+                          for (var _152 in state) {
+                              if (state.hasOwnProperty(_152)) {
+                                  _151[_152] = state[_152];
+                              };
+                          };
+                          _151.state = ShowError.create("Run failed: " + (Prelude.show(Machine.showError)(_150.value0) + "."));
+                          return _151;
+                      };
+                      if (_150 instanceof Data_Either.Right) {
+                          var _154 = {};
+                          for (var _155 in state) {
+                              if (state.hasOwnProperty(_155)) {
+                                  _154[_155] = state[_155];
+                              };
+                          };
+                          _154.machine = new Data_Maybe.Just(_150.value0);
+                          return _154;
+                      };
+                      throw new Error("Failed pattern match: " + [ _150.constructor.name ]);
+                  };
+                  throw new Error("Failed pattern match at SimScreen line 181, column 1 - line 182, column 1: " + [ _143.constructor.name ]);
               };
               if (state.machine instanceof Data_Maybe.Nothing) {
                   return startMachine(input)(state);
               };
-              throw new Error("Failed pattern match at SimScreen line 180, column 1 - line 181, column 1: " + [ state.machine.constructor.name ]);
+              throw new Error("Failed pattern match at SimScreen line 181, column 1 - line 182, column 1: " + [ state.machine.constructor.name ]);
           };
           return state;
       };
@@ -4253,14 +4296,14 @@ var PS = { };
       return _6.code;
   })(function (_7) {
       return function (_8) {
-          var _152 = {};
-          for (var _153 in _7) {
-              if (_7.hasOwnProperty(_153)) {
-                  _152[_153] = _7[_153];
+          var _162 = {};
+          for (var _163 in _7) {
+              if (_7.hasOwnProperty(_163)) {
+                  _162[_163] = _7[_163];
               };
           };
-          _152.code = _8;
-          return _152;
+          _162.code = _8;
+          return _162;
       };
   });
   var updateCode = function (input) {
@@ -4281,16 +4324,16 @@ var PS = { };
                           throw new Error("Failed pattern match: " + [ input.zeroOne.one.constructor.name ]);
                       })();
                   };
-                  throw new Error("Failed pattern match at SimScreen line 127, column 13 - line 128, column 9: " + [ input.zeroOne.zero.constructor.name ]);
+                  throw new Error("Failed pattern match at SimScreen line 128, column 13 - line 129, column 9: " + [ input.zeroOne.zero.constructor.name ]);
               })();
-              var _157 = Data_String.length(line) >= 8;
-              if (_157) {
+              var _167 = Data_String.length(line) >= 8;
+              if (_167) {
                   return Data_Lens_Setter.over(code(Data_Profunctor_Strong.strongFn))(Data_List.Cons.create(Data_String.take(8)(line)))(Data_Lens_Setter.set(currLine(Data_Profunctor_Strong.strongFn))(Data_String.drop(8)(line))(state));
               };
-              if (!_157) {
+              if (!_167) {
                   return Data_Lens_Setter.set(currLine(Data_Profunctor_Strong.strongFn))(line)(state);
               };
-              throw new Error("Failed pattern match at SimScreen line 123, column 1 - line 124, column 1: " + [ _157.constructor.name ]);
+              throw new Error("Failed pattern match at SimScreen line 124, column 1 - line 125, column 1: " + [ _167.constructor.name ]);
           };
           return state;
       };
@@ -4312,6 +4355,7 @@ var PS = { };
   exports["code"] = code;
   exports["currLine"] = currLine;
   exports["currInput"] = currInput;
+  exports["splitLine"] = splitLine;
   exports["renderDone"] = renderDone;
   exports["renderError"] = renderError;
   exports["renderInput"] = renderInput;
@@ -4423,6 +4467,16 @@ var PS = { };
           };
       };
   };
+  var mission03_text = "\nGood, Good! This will be come in handy!\n\nNext, we need an automatic countdown machine.\n\nDon't ask want we are going to count down to.\n\nBuild one for us, we'll give you one positive number, you will print all numbers from it until zero (including zero).\n";
+  var mission03 = function (comp) {
+      return new Screens(VNScreen.create(Screen.screens(comp)(mission03_text)), Simulation.create(SimScreen.mkSimScreen(Zipper.zipper({
+          input: new Data_List.Cons(5, Data_List.Nil.value), 
+          output: Data_List.range(0)(5)
+      })(Data_List.Nil.value)(new Data_List.Cons({
+          input: new Data_List.Cons(3, Data_List.Nil.value), 
+          output: Data_List.range(0)(3)
+      }, Data_List.Nil.value)))(comp)));
+  };
   var mission02_text = "\nNice, you have completed the first mission!\n\nThough maybe it's not that impressive, there are only two buttons, how hard can it be?\n\nNext, we need a machine that can add two numbers together.\n\nBuild one for us, we'll give you two numbers, you give us their sum.\n";
   var mission02 = function (comp) {
       return new Screens(VNScreen.create(Screen.screens(comp)(mission02_text)), Simulation.create(SimScreen.mkSimScreen(Zipper.zipper({
@@ -4512,7 +4566,7 @@ var PS = { };
   };
   var end_text = "\nYou did it! You completed all of our tasks!\n\nThat's amazing!\n\nWe have no more tasks for you.\n\nTherefore, you are fired.\n\nThank you, and goodbye.\n\nThe End.\n";
   var initialState = Prelude.bind(Control_Monad_Aff.bindAff)(CanvasUtils.loadImageData("assets/comp2.png"))(function (_4) {
-      return Prelude.pure(Control_Monad_Aff.applicativeAff)(new Screens(Screens.create(VNScreen.create(Screen.screens(_4)(Screen.intro)))(new Screens(mission01(_4), mission02(_4))), VNScreen.create(Screen.screens(_4)(end_text))));
+      return Prelude.pure(Control_Monad_Aff.applicativeAff)(new Screens(Screens.create(VNScreen.create(Screen.screens(_4)(Screen.intro)))(Screens.create(mission01(_4))(new Screens(mission02(_4), mission03(_4)))), VNScreen.create(Screen.screens(_4)(end_text))));
   });
   var clearCanvas = function (ctx) {
       return function __do() {
@@ -4555,6 +4609,8 @@ var PS = { };
   exports["renderScreens"] = renderScreens;
   exports["update"] = update;
   exports["end_text"] = end_text;
+  exports["mission03_text"] = mission03_text;
+  exports["mission03"] = mission03;
   exports["mission02_text"] = mission02_text;
   exports["mission02"] = mission02;
   exports["mission01_text"] = mission01_text;

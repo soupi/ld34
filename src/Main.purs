@@ -2,7 +2,7 @@ module Main where
 
 import Prelude
 
-import Data.List (List(..))
+import Data.List (List(..), range)
 import Data.Maybe
 import Control.Monad.Eff
 import Control.Monad.Aff
@@ -51,8 +51,10 @@ initialState = do
       (Screens
         (VNScreen $ screens comp intro) $
         Screens
-          (mission01 comp)
-          (mission02 comp))
+          (mission01 comp) $
+          Screens
+            (mission02 comp)
+            (mission03 comp))
       (VNScreen $ screens comp end_text)
 
 mission01 comp =
@@ -84,6 +86,25 @@ Though maybe it's not that impressive, there are only two buttons, how hard can 
 Next, we need a machine that can add two numbers together.
 
 Build one for us, we'll give you two numbers, you give us their sum.
+"""
+
+
+mission03 comp =
+  Screens
+     (VNScreen $ screens comp mission03_text)
+     (Simulation $ Sim.mkSimScreen (zipper {input: Cons 5 Nil, output: range 0 5} Nil $
+                                      Cons {input: Cons 3 Nil, output: range 0 3} Nil)
+                                      comp)
+
+mission03_text =
+  """
+Good, Good! This will be come in handy!
+
+Next, we need an automatic countdown machine.
+
+Don't ask want we are going to count down to.
+
+Build one for us, we'll give you one positive number, you will print all numbers from it until zero (including zero).
 """
 
 

@@ -94,9 +94,9 @@ eval machine =
           pure $ over stack (\s -> if null s then Cons 0 s else Cons 1 s) machine
         LOADVAL n ->
           pure $ over stack (Cons n) machine
-        LOADIN ->
-          (\machine -> maybe (throwErr InputError) (\i -> pure $ set input i machine) (tail machine.input)) =<<
-          maybe (throwErr InputError) (\x -> pure $ over stack (Cons x) machine) (head machine.input)
+        LOADIN -> fromMaybe (throwErr InputError) do
+          {head: x, tail: xs} <- uncons machine.input
+          pure $ pure $ set input xs $ over stack (Cons x) machine
         POP ->
           maybe (throwErr StackUnderflow) (\s -> pure $ set stack s machine) (tail machine.stack)
         ADD ->

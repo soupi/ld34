@@ -9,6 +9,7 @@ import Data.Either
 import Data.Traversable
 import Data.List as List
 import Data.String (split, length, take, drop)
+import Data.String as Str
 import Control.Monad.Eff
 import Control.Monad.Aff
 import Graphics.Canvas as C
@@ -229,7 +230,7 @@ updateState input state =
                   else
                     state { state = Done }
                 else
-                  state { state = ShowError $ "Test failed: input was: " <> show (current state.tests).input <> ", expected output was: " <> show (current state.tests).output <> ". got: " <> show mch.output <> "." }
+                  state { state = ShowError $ "Test failed: input was: " <> show (current state.tests).input <> ", expected output was: " <> show (List.reverse (current state.tests).output) <> ". got: " <> show (List.reverse mch.output) <> "." }
           else case M.eval mch of
             Left err ->
               state { state = ShowError $ "Run failed: " <> show err <> "." }
@@ -380,7 +381,11 @@ renderError err ctx state = do
   C.setFillStyle "rgba(235,135,155,0.9)" ctx
   C.fillRect ctx { x: 80.0, y: 20.0, w: width - 160.0, h: 100.0 }
   C.setFillStyle "white" ctx
-  C.fillText ctx err 120.0 60.0
+  C.setFont "16px monospace" ctx
+  let texts = map (splitLine err) (List.range 0 (Str.length err / 80))
+  sequence $ List.zipWith (\i text -> C.fillText ctx text 120.0 (60.0 + 30.0 * toNumber i)) (List.range 0 (List.length texts)) texts
+  C.setFont "18px monospace" ctx
+
   pure unit
 
 renderDone :: C.Context2D -> SimScreen -> Eff ( canvas :: C.Canvas | _) Unit
@@ -390,6 +395,25 @@ renderDone ctx state = do
   C.setFillStyle "white" ctx
   C.fillText ctx "Great Job!" 120.0 60.0
   pure unit
+
+
+splitLine text i =
+  let n = i * 80
+  in
+    case Str.uncons $ Str.drop (n+79) text of
+      Nothing ->
+        Str.take 80 $ Str.drop n text
+      Just {head: x, tail: xs} ->
+        if x == ' ' then
+          Str.take 80 $ Str.drop n text
+        else case Str.uncons $ Str.drop (n+80) text of
+          Nothing ->
+            Str.take 80 $ Str.drop n text
+          Just {head: x, tail: xs} ->
+            if x == ' ' then
+              Str.take 80 $ Str.drop n text
+            else
+              (Str.take 80 $ Str.drop n text) <> "-"
 
 
 
