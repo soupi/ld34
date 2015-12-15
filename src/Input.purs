@@ -29,8 +29,8 @@ input = do
          <$> time
          <*> arrowsInputs
          <*> sdir
-         <*> once z
-         <*> once o
+         <*> z
+         <*> o
          <*> mouse
          <*> winDim
          <*> ioSignal

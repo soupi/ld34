@@ -114,10 +114,14 @@ update input currState@(Screens currScreen nextScreen) =
   then Wait input.time nextScreen
   else Screens (update input currScreen) nextScreen
 update input currState@(Wait t nextState) =
-  if t + S.second / 4.0 <= input.time
+  if t + S.second / 5.0 <= input.time
   then nextState
   else currState
-update input (Simulation sim) = Simulation $ Sim.update input sim
+update input (Simulation sim) =
+  if input.zeroOne.zero || input.zeroOne.one || input.screenDir < 0.0 then
+    Wait input.time $ Simulation $ Sim.update input sim
+  else
+    Simulation $ Sim.update input sim
 update input state@(VNScreen screens) =
   if input.screenDir > 0.0 || isJust input.mouseClick then
     (VNScreen <<< snd <<< next) screens

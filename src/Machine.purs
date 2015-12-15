@@ -61,6 +61,7 @@ data Instruction
   | COMPARE -- compare two values of the top of the stack - zero means equal
   | ADD -- adds top two on stack
   | EMPTY -- pushs zero on the stack if it is empty
+  | DUP -- duplicates top element
 
 data Error
   = StackUnderflow
@@ -85,6 +86,8 @@ eval machine =
           pure machine
         JUMPIF ->
           pure machine
+        DUP ->
+          maybe (throwErr StackUnderflow) (\x -> pure $ over stack (Cons x) machine) (head machine.stack)
         PRINT ->
           maybe (throwErr StackUnderflow) (\x -> pure $ over output (Cons x) machine) (head machine.stack)
         EMPTY ->
@@ -133,6 +136,8 @@ movePC machine =
     ADD ->
       pure $ over code (moveBy 1) machine
     EMPTY ->
+      pure $ over code (moveBy 1) machine
+    DUP ->
       pure $ over code (moveBy 1) machine
 
 
@@ -186,6 +191,8 @@ translate txt =
       pure COMPARE
     Tuple "010" "01000" ->
       pure ADD
+    Tuple "110" "01100" ->
+      pure DUP
     _ ->
       throwErr UnknownInstruction
 
