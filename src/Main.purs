@@ -139,16 +139,20 @@ update input currState@(Wait t nextState) =
   then nextState
   else currState
 update input (Simulation sim) =
-  if input.zeroOne.zero || input.zeroOne.one || input.screenDir < 0.0 then
+  if input.zeroOne.zero || input.zeroOne.one || input.screenDir < 0.0 || input.screenDir > 0.0 || fst input.io || snd input.io || input.runTests || isJust input.mouseClick then
     Wait input.time $ Simulation $ Sim.update input sim
   else
     Simulation $ Sim.update input sim
 update input state@(VNScreen screens) =
-  if input.screenDir > 0.0 || isJust input.mouseClick then
-    (VNScreen <<< snd <<< next) screens
-  else if input.screenDir < 0.0 then
-    (VNScreen <<< snd <<< back) screens
-  else
+  if input.zeroOne.zero || input.zeroOne.one || input.screenDir < 0.0 || input.screenDir > 0.0 || fst input.io || snd input.io || input.runTests || isJust input.mouseClick then
+    Wait input.time $
+    if input.screenDir > 0.0 || isJust input.mouseClick then
+        (VNScreen <<< snd <<< next) screens
+    else if input.screenDir < 0.0 then
+        (VNScreen <<< snd <<< back) screens
+    else
+        state
+ else
     state
 
 ------------

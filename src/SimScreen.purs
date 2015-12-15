@@ -263,7 +263,7 @@ updateState input state =
       state
     ShowError _ ->
       if input.screenDir < 0.0 then
-        state { state = ShowMachine }
+        state { machine = Nothing, state = ShowMachine }
       else
         state
 

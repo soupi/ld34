@@ -84,19 +84,19 @@ oKeyCode = 79
 tKeyCode = 84
 
 tKey = do
-  once <$> S.keyPressed tKeyCode
+  S.keyPressed tKeyCode
 
 io = do
   i <- S.keyPressed iKeyCode
   o <- S.keyPressed oKeyCode
-  pure $ Tuple <$> once i <*> once o
+  pure $ Tuple <$> i <*> o
 
 screenDirection = do
   foreward <- S.keyPressed enterKeyCode
   back <- S.keyPressed escKeyCode
   pure $  (\f b -> asNum f - asNum b)
-      <$> once foreward
-      <*> once back
+      <$> foreward
+      <*> back
 
 asNum b = if b then 1.0 else 0.0
 
@@ -122,13 +122,7 @@ mouseClick = do
   down <- S.mouseButton 0
   pure $ (\p d -> if d then Just { x: toNumber p.x, y: toNumber p.y } else Nothing)
       <$> pos
-      <*> once down
-
-
-once :: S.Signal Boolean -> S.Signal Boolean
-once sig =
-  (&&) <$> sig
-       <*> (S.since (S.millisecond * 8.0) $ S.dropRepeats sig)
+      <*> down
 
 
 zeroOne = lens _.zeroOne (_ { zeroOne = _ })
