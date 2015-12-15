@@ -2,6 +2,7 @@ module Machine where
 
 import Prelude
 import Data.Maybe
+import Data.Maybe.Unsafe (fromJust)
 import Data.Either
 import Data.List
 import Data.String as S
@@ -10,6 +11,8 @@ import Control.Bind
 
 import Utils
 import Zipper
+
+import Debug.Trace
 
 type Machine =
   { code   :: Zipper Instruction
@@ -95,7 +98,7 @@ eval machine =
           maybe (throwErr StackUnderflow) (\s -> pure $ set stack s machine) (tail machine.stack)
         ADD ->
           maybe (throwErr StackUnderflow)
-                (\(Tuple x y) -> pure $ over stack (Cons (if x + y > 31 then x + y - 31 else if x + y < -31 then 31 - (x+y) else x+y)) machine)
+                (\(Tuple x y) -> pure $ over stack (Cons (if x + y > 15 then x + y - 15 else if x + y < -15 then 15 - (x+y) else x+y) <<< fromJust <<< tail <<< fromJust <<< tail) machine)
                 (takeTwo machine.stack)
         COMPARE ->
           maybe (throwErr StackUnderflow)
@@ -122,11 +125,11 @@ movePC machine =
     POP ->
       pure $ over code (moveBy 1) machine
     JUMP ->
-      maybe (throwErr StackUnderflow) (\x -> pure $ over code (moveBy x) machine) (head machine.stack)
+      maybe (throwErr StackUnderflow) (\x -> pure $ over stack (fromJust <<< tail) $ over code (moveBy x) machine) (head machine.stack)
     COMPARE ->
       pure $ over code (moveBy 1) machine
     JUMPIF ->
-      maybe (throwErr StackUnderflow) (\x -> pure $ over code (if x /= 0 then moveBy x else moveBy 1) machine) (head machine.stack)
+      maybe (throwErr StackUnderflow) (\(Tuple a b) -> pure $ over stack (fromJust <<< tail) $ over code (if b /= 0 then moveBy a else moveBy 1) machine) (takeTwo machine.stack)
     ADD ->
       pure $ over code (moveBy 1) machine
     EMPTY ->
@@ -146,6 +149,7 @@ moveBy n zipp
   | n >  0 = moveBy (n-1) (snd $ next zipp)
   | n <  0 = moveBy (n+1) (snd $ back zipp)
   | otherwise = zipp
+
 
 halted :: Machine -> Boolean
 halted machine =
@@ -176,7 +180,7 @@ translate txt =
       pure POP
     Tuple "000" "10001" ->
       pure JUMP
-    Tuple "100" "10001" ->
+    Tuple "000" "10101" ->
       pure JUMPIF
     Tuple "001" "10011" ->
       pure COMPARE

@@ -128,7 +128,7 @@ mouseClick = do
 once :: S.Signal Boolean -> S.Signal Boolean
 once sig =
   (&&) <$> sig
-       <*> (S.since (S.millisecond * 10.0) $ S.dropRepeats sig)
+       <*> (S.since (S.millisecond * 8.0) $ S.dropRepeats sig)
 
 
 zeroOne = lens _.zeroOne (_ { zeroOne = _ })
