@@ -50,7 +50,7 @@ initialState = do
     Screens
       (Screens
         (VNScreen $ screens comp intro)
-        mission01 comp)
+        (mission01 comp))
       (VNScreen $ screens comp end_text)
 
 mission01 comp =
@@ -73,7 +73,7 @@ That's amazing!
 
 We have no more tasks for you.
 
-therefore, you are fired.
+Therefore, you are fired.
 
 Thank you, and goodbye.
 

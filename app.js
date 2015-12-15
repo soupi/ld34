@@ -2663,13 +2663,13 @@ var PS = { };
   });
   var showError = new Prelude.Show(function (_25) {
       if (_25 instanceof StackUnderflow) {
-          return "StackUnderflow";
+          return "Stack Underflow";
       };
       if (_25 instanceof UnknownInstruction) {
-          return "UnknownInstruction";
+          return "Unknown Instruction";
       };
       if (_25 instanceof InputError) {
-          return "InputError";
+          return "Input Error";
       };
       throw new Error("Failed pattern match at Machine line 67, column 1 - line 72, column 1: " + [ _25.constructor.name ]);
   });
@@ -3079,7 +3079,7 @@ var PS = { };
           throw new Error("Failed pattern match at Screen line 39, column 1 - line 40, column 1: " + [ _3.constructor.name ]);
       };
   };
-  var intro = "Welcome to <Company>.\n\nFor the past 40 years our scientists and engineers have been working on a top secret project.\n\nAt last, they have succeeded in creating a marvelous machine, a computing machine.\n\nWe call it 'The Computing Machine'.\n\nYou had the fortune to be selected as one of the chosen few to operate The Computing Machine.\n\nAt <Company>, we have a lot of challenges waiting to be solved.\n\nFortunately for you, The Computing Machine is really simple to operate, it only has two buttons!\n\nAll you have to do is insert the right combination of the two buttons, and The Computing Machine will do the rest!\n\nGood Luck!";
+  var intro = "Welcome to CompCompany.\n\nFor the past 40 years our scientists and engineers have been working on a top secret project.\n\nAt last, they have succeeded in creating a marvelous machine, a computing machine.\n\nWe call it 'The Computing Machine'.\n\nYou had the fortune to be selected as one of the chosen few to operate The Computing Machine.\n\nAt CompCompany, we have a lot of challenges waiting to be solved.\n\nFortunately for you, The Computing Machine is really simple to operate, it only has two buttons!\n\nAll you have to do is insert the right combination of the two buttons, and The Computing Machine will do the rest!\n\nGood Luck!";
   exports["renderScreen"] = renderScreen;
   exports["intro"] = intro;
   exports["scrArr"] = scrArr;
@@ -4158,16 +4158,13 @@ var PS = { };
           };
       };
   };
-  var mission01_text = "\nYour first mission is to print the number 5 (00101).\n\nWe are counting on you!\n";
+  var mission01_text = "\nYour first mission is to make the machine print the number 5.\n\nWe are counting on you!\n";
   var mission01 = function (comp) {
       return new Screens(VNScreen.create(Screen.screens(comp)(mission01_text)), Simulation.create(SimScreen.mkSimScreen(Zipper.zipper({
           input: Data_List.Nil.value, 
           output: new Data_List.Cons(5, Data_List.Nil.value)
       })(Data_List.Nil.value)(Data_List.Nil.value))(comp)));
   };
-  var initialState = Prelude.bind(Control_Monad_Aff.bindAff)(CanvasUtils.loadImageData("assets/comp2.png"))(function (_4) {
-      return Prelude.pure(Control_Monad_Aff.applicativeAff)(Screens.create(VNScreen.create(Screen.screens(_4)(Screen.intro)))(mission01(_4)));
-  });
   var finished = function (_5) {
       if (_5 instanceof VNScreen) {
           return !Utils.fst(Zipper.next(_5.value0));
@@ -4186,48 +4183,52 @@ var PS = { };
   var update = function (input) {
       return function (_6) {
           if (_6 instanceof Screens) {
-              var _26 = (input.screenDir > 0.0 || Data_Maybe.isJust(input.mouseClick)) && finished(_6.value0);
-              if (_26) {
+              var _25 = (input.screenDir > 0.0 || Data_Maybe.isJust(input.mouseClick)) && finished(_6.value0);
+              if (_25) {
                   return new Wait(input.time, _6.value1);
               };
-              if (!_26) {
+              if (!_25) {
                   return new Screens(update(input)(_6.value0), _6.value1);
               };
-              throw new Error("Failed pattern match: " + [ _26.constructor.name ]);
+              throw new Error("Failed pattern match: " + [ _25.constructor.name ]);
           };
           if (_6 instanceof Wait) {
-              var _29 = _6.value0 + Signal_Time.second / 4.0 <= input.time;
-              if (_29) {
+              var _28 = _6.value0 + Signal_Time.second / 4.0 <= input.time;
+              if (_28) {
                   return _6.value1;
               };
-              if (!_29) {
+              if (!_28) {
                   return _6;
               };
-              throw new Error("Failed pattern match: " + [ _29.constructor.name ]);
+              throw new Error("Failed pattern match: " + [ _28.constructor.name ]);
           };
           if (_6 instanceof Simulation) {
               return Simulation.create(SimScreen.update(input)(_6.value0));
           };
           if (_6 instanceof VNScreen) {
-              var _33 = input.screenDir > 0.0 || Data_Maybe.isJust(input.mouseClick);
-              if (_33) {
+              var _32 = input.screenDir > 0.0 || Data_Maybe.isJust(input.mouseClick);
+              if (_32) {
                   return VNScreen.create(Utils.snd(Zipper.next(_6.value0)));
               };
-              if (!_33) {
-                  var _34 = input.screenDir < 0.0;
-                  if (_34) {
+              if (!_32) {
+                  var _33 = input.screenDir < 0.0;
+                  if (_33) {
                       return VNScreen.create(Utils.snd(Zipper.back(_6.value0)));
                   };
-                  if (!_34) {
+                  if (!_33) {
                       return _6;
                   };
-                  throw new Error("Failed pattern match: " + [ _34.constructor.name ]);
+                  throw new Error("Failed pattern match: " + [ _33.constructor.name ]);
               };
-              throw new Error("Failed pattern match: " + [ _33.constructor.name ]);
+              throw new Error("Failed pattern match: " + [ _32.constructor.name ]);
           };
           throw new Error("Failed pattern match: " + [ input.constructor.name, _6.constructor.name ]);
       };
   };
+  var end_text = "\nYou did it! You completed all of our tasks!\n\nThat's amazing!\n\nWe have no more tasks for you.\n\nTherefore, you are fired.\n\nThank you, and goodbye.\n\nEnd.\n";
+  var initialState = Prelude.bind(Control_Monad_Aff.bindAff)(CanvasUtils.loadImageData("assets/comp2.png"))(function (_4) {
+      return Prelude.pure(Control_Monad_Aff.applicativeAff)(new Screens(new Screens(VNScreen.create(Screen.screens(_4)(Screen.intro)), mission01(_4)), VNScreen.create(Screen.screens(_4)(end_text))));
+  });
   var clearCanvas = function (ctx) {
       return function __do() {
           Graphics_Canvas.setFillStyle("#1B1C1B")(ctx)();
@@ -4268,6 +4269,7 @@ var PS = { };
   exports["render"] = render;
   exports["renderScreens"] = renderScreens;
   exports["update"] = update;
+  exports["end_text"] = end_text;
   exports["mission01_text"] = mission01_text;
   exports["mission01"] = mission01;
   exports["initialState"] = initialState;
