@@ -4158,6 +4158,19 @@ var PS = { };
           };
       };
   };
+  var mission02_text = "\nNice, you have completed the first mission!\n\nThough maybe it's not that impressive, there are only two buttons, how hard can it be?\n\nNext, we need a machine that can add two numbers together.\n\nBuild one for us, we'll give you two numbers, you give us their sum.\n";
+  var mission02 = function (comp) {
+      return new Screens(VNScreen.create(Screen.screens(comp)(mission02_text)), Simulation.create(SimScreen.mkSimScreen(Zipper.zipper({
+          input: Data_List.Cons.create(4)(new Data_List.Cons(5, Data_List.Nil.value)), 
+          output: new Data_List.Cons(9, Data_List.Nil.value)
+      })(Data_List.Nil.value)(Data_List.Cons.create({
+          input: Data_List.Cons.create(3)(new Data_List.Cons(3, Data_List.Nil.value)), 
+          output: new Data_List.Cons(6, Data_List.Nil.value)
+      })(new Data_List.Cons({
+          input: Data_List.Cons.create(-3)(new Data_List.Cons(3, Data_List.Nil.value)), 
+          output: new Data_List.Cons(0, Data_List.Nil.value)
+      }, Data_List.Nil.value))))(comp)));
+  };
   var mission01_text = "\nYour first mission is to make the machine print the number 5.\n\nWe are counting on you!\n";
   var mission01 = function (comp) {
       return new Screens(VNScreen.create(Screen.screens(comp)(mission01_text)), Simulation.create(SimScreen.mkSimScreen(Zipper.zipper({
@@ -4225,9 +4238,9 @@ var PS = { };
           throw new Error("Failed pattern match: " + [ input.constructor.name, _6.constructor.name ]);
       };
   };
-  var end_text = "\nYou did it! You completed all of our tasks!\n\nThat's amazing!\n\nWe have no more tasks for you.\n\nTherefore, you are fired.\n\nThank you, and goodbye.\n\nEnd.\n";
+  var end_text = "\nYou did it! You completed all of our tasks!\n\nThat's amazing!\n\nWe have no more tasks for you.\n\nTherefore, you are fired.\n\nThank you, and goodbye.\n\nThe End.\n";
   var initialState = Prelude.bind(Control_Monad_Aff.bindAff)(CanvasUtils.loadImageData("assets/comp2.png"))(function (_4) {
-      return Prelude.pure(Control_Monad_Aff.applicativeAff)(new Screens(new Screens(VNScreen.create(Screen.screens(_4)(Screen.intro)), mission01(_4)), VNScreen.create(Screen.screens(_4)(end_text))));
+      return Prelude.pure(Control_Monad_Aff.applicativeAff)(new Screens(Screens.create(VNScreen.create(Screen.screens(_4)(Screen.intro)))(new Screens(mission01(_4), mission02(_4))), VNScreen.create(Screen.screens(_4)(end_text))));
   });
   var clearCanvas = function (ctx) {
       return function __do() {
@@ -4270,6 +4283,8 @@ var PS = { };
   exports["renderScreens"] = renderScreens;
   exports["update"] = update;
   exports["end_text"] = end_text;
+  exports["mission02_text"] = mission02_text;
+  exports["mission02"] = mission02;
   exports["mission01_text"] = mission01_text;
   exports["mission01"] = mission01;
   exports["initialState"] = initialState;
