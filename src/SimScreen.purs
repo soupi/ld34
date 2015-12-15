@@ -299,6 +299,8 @@ render ctx screen = do
 
   sequence $ List.zipWith (\p txt -> C.fillText ctx txt p.x p.y) (map (getPosition 350.0 230.0) $ List.range 0 40) (List.reverse screen.code)
 
+  C.setFont "18px monospace" ctx
+
   case screen.state of
     ShowMachine -> do
       renderMachine ctx screen
