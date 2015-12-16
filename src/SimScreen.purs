@@ -168,7 +168,7 @@ resetMachine input state =
       ShowInput ->
         state { state = ShowMachine }
       ShowError _ ->
-        state { state = ShowMachine }
+        state { state = ShowMachine, machine = Nothing }
       RunMachine ->
         state { state = ShowMachine, machine = Nothing }
       TestMachine ->
