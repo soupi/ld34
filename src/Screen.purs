@@ -93,6 +93,8 @@ or start fresh.
 That's it.
 
 Oh, and just scroll to the Machine Manual at the bottom of the page.
+Make sure to end all your programs with HALT. If your program does not stop,
+just power the machine down and try again.
 
 Good luck!
 """
