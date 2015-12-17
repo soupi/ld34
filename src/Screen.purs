@@ -53,9 +53,11 @@ intro :: String
 intro =
   """Welcome to CompCompany.
 
-For the past 40 years our scientists and engineers have been working on a top secret project.
+For the past 40 years our scientists and engineers have been working on a top
+secret project.
 
-At last, they have succeeded in creating a marvelous machine, a computing machine.
+At last, they have succeeded in creating a marvelous machine,
+a computing machine.
 
 We call it 'The Computing Machine'.
 
@@ -67,7 +69,33 @@ Fortunately for you, The Computing Machine is really simple to operate, it only 
 
 All you have to do is insert the right combination of the two buttons, and The Computing Machine will do the rest!
 
-Good Luck!"""
+Our engineering team will explain the rest.
+
+Good Luck!
+
+...
+
+.....
+
+Alright! We are going to give you a few missions now.
+
+Just write your solution with the 0 and 1 buttons and press the TEST button (or press T on your keyboard)
+For us to test your solution. If you pass our test, we will give you another mission.
+
+If you just want to try things yourself, use the RUN button (or press Enter) to test things yourself.
+
+To enter input or view output for yourself, just touch the paper slips
+on the side of The Computing Machine.
+
+And if anything goes wrong, you can always press the RESET or POWER button (or Esc) to go back
+or start fresh.
+
+That's it.
+
+Oh, and just scroll to the Machine Manual at the bottom of the page.
+
+Good luck!
+"""
 
 ------------
 -- Render

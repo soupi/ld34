@@ -45,7 +45,7 @@ finished (Screens s1 s2) = finished s1 && finished s2
 
 initialState :: Aff _ State
 initialState = do
-  comp <- loadImageData "assets/comp2.png"
+  comp <- loadImageData "assets/compost.png"
   pure $
     Screens
       (Screens

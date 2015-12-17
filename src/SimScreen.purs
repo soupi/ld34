@@ -68,7 +68,7 @@ mkSimScreen tests img =
 
 mkCompScreen :: Zipper Test -> Aff _ SimScreen
 mkCompScreen tests = do
-  map (mkSimScreen tests) $ loadImageData "assets/comp2.png"
+  map (mkSimScreen tests) $ loadImageData "assets/compost.png"
 
 done :: SimScreen -> Boolean
 done state =
@@ -91,15 +91,34 @@ oneButton =
   }
 
 resetButton =
-  { pos:  { x: 497.0, y: 627.0 }
-  , size: { x: 134.0, y: 82.0 }
+  { pos:  { x: 135.0, y: 265.0 }
+  , size: { x: 60.0, y: 40.0 }
   }
 
 runButton =
-  { pos:  { x: 497.0, y: 627.0 }
-  , size: { x: 134.0, y: 82.0 }
+  { pos:  { x: 135.0, y: 350.0 }
+  , size: { x: 65.0, y: 45.0 }
   }
 
+testButton =
+  { pos:  { x: 135.0, y: 435.0 }
+  , size: { x: 65.0, y: 45.0 }
+  }
+
+powerButton =
+  { pos:  { x: 130.0, y: 190.0 }
+  , size: { x: 50.0, y: 40.0 }
+  }
+
+inButton =
+  { pos:  { x: 30.0, y: 495.0 }
+  , size: { x: 60.0, y: 45.0 }
+  }
+
+outButton =
+  { pos:  { x: 880.0, y: 500.0 }
+  , size: { x: 65.0, y: 75.0 }
+  }
 
 updateMouseInput i =
   case i.mouseClick of
@@ -110,6 +129,18 @@ updateMouseInput i =
         set (I.zeroOne <<< I.zero) true i
       else if p `pointInRect` oneButton then
         set (I.zeroOne <<< I.one) true i
+      else if p `pointInRect` runButton then
+        i { screenDir = 1.0 }
+      else if p `pointInRect` testButton then
+        i { runTests = true }
+      else if p `pointInRect` resetButton then
+        i { screenDir = -1.0 }
+      else if p `pointInRect` powerButton then
+        i { screenDir = -1.0 }
+      else if p `pointInRect` inButton then
+        i { io = Tuple true false }
+      else if p `pointInRect` outButton then
+        i { io = Tuple false true }
       else
         i
 
