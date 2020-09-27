@@ -4,7 +4,10 @@
     <title>01 - LD34 game by suppi</title>
   </head>
   <body style="font-family: monospace">
-  <div style="display: flex">
+  <div style="display: flex; flex-wrap: wrap">
+    <div style="width: 1024px; height: 800px; margin: auto;">
+      <canvas id="canvas" width=1024 height=800 />
+    </div>
     <div>
       <h3>Controls</h3>
       <ul>
@@ -15,11 +18,6 @@
         <li>O: open outputs window</li>
         <li>T: test solution</li>
       </ul>
-    </div>
-    <div style="width: 1024px; height: 800px; margin: auto;">
-      <canvas id="canvas" width=1024 height=800 />
-    </div>
-    <div>
       <h3>Machine Manual</h3>
       <p>The machine in the game is a very simple stack machine with very few opcodes:</p>
 
